@@ -1,7 +1,6 @@
 # Postgresql Flexible Server
 
-This terraform module simplifies the process of creating and managing postgresql flexible server and database resources on azure with configurable options for a integrated virtual network,
-customer managed keys, user assigned identity, subnets, private dns zone and more to ensure a secure and efficient environment for resource communication in the cloud.
+This Terraform module streamlines the creation and management of postgresql flexible servers on Azure, offering a flexible solution for deploying optimized instances.
 
 **Note**: This module will deploy the flexible server and not the single server which is on a deprecation [path](https://azure.microsoft.com/en-us/updates/azure-database-for-postgresql-single-server-will-be-retired-migrate-to-flexible-server-by-28-march-2025/).
 
