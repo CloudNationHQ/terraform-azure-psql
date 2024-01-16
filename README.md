@@ -23,6 +23,8 @@ A last key goal is to separate logic from configuration in the module, thereby e
 - allows creation of empty databases.
 - utilization of terratest for robust validation.
 
+## Requirements
+
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
