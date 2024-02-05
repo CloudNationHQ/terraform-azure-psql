@@ -59,17 +59,17 @@ resource |
 
 | Name | Description | Type | Required |
 | :-- | :-- | :-- | :-- |
-| `instance` | describes sql server related configuration | object | yes |
-| `location` | used for naming purposes | string | yes |
-| `resourcegroup` | used for naming purposes | string | yes |
+| `instance` | describes psql server related configuration | object | yes |
+| `location` | default azure region and can be used if location is not specified inside the object | string | yes |
+| `resourcegroup` | default resource group and can be used if resourcegroup is not specified inside the object | string | yes |
 | `naming` | used for naming purposes | string | yes |
 
 ## Outputs
 
 | Name | Description |
 | :-- | :-- |
-| `postgresql_server` | contains all postgresql flexible server config |
-| `databases` | contains all postgresql databases |
+| `instance` | contains all psql flexible server config |
+| `databases` | contains all databases |
 
 ## Testing
 

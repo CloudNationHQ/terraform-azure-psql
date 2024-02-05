@@ -1,4 +1,5 @@
 variable "instance" {
+  description = "describes psql server related configuration"
   type = any
 }
 

@@ -15,7 +15,7 @@ module "postgresql" {
 }
 ```
 
-Additionally, for certain scenarios, the example below highlights the ability to use multiple psql instances.
+Additionally, for certain scenarios, the example below highlights the ability to use multiple instances.
 
 ## Usage: multiple
 
@@ -31,14 +31,26 @@ module "postgresql" {
 }
 ```
 
-The module uses a local to iterate, generating a storage account for each key.
+The module uses a local to iterate, generating a postgresql flexible server for each key.
 
 ```hcl
 locals {
-  psql = {
+  instances = {
+    inst1 = {
+      name = "psql-demo-dev-1"
+      databases = {
+        user = { charset = "UTF8" }
+      }
+    }
+    inst2 = {
+      name = "psql-demo-dev-2"
+      fw_rules = {
+        sales = {
+          start_ip_address = "10.20.30.1"
+          end_ip_address   = "10.20.30.255"
+        }
       }
     }
   }
 }
 ```
-
