@@ -59,9 +59,9 @@ module "postgresql" {
     }
 
     ad_admin = {
-      ## This is the ServicePrincipal or User that will be set as AD admin, 
-      ## if not defined it defaults to ServicePrincipal under the current Terraform run, 
-      ## if ran under a personal user, always provide the principal_type = "User". 
+      ## This is the ServicePrincipal or User that will be set as AD admin,
+      ## if not defined it defaults to ServicePrincipal under the current Terraform run,
+      ## if ran under a personal user, always provide the principal_type = "User".
       principal_type = "User"
       ## Optional values to add another user or service principal as an AD admin (instead of current).
       # object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"

@@ -17,7 +17,7 @@ A last key goal is to separate logic from configuration in the module, thereby e
 ## Features
 
 - enables azure ad and local administrator authentication, individually or in combination.
-- p rovides support for customer managed keys using a user-assigned identity.
+- provides support for customer managed keys using a user-assigned identity.
 - facilitates vnet integration through subnet delegation and private DNS zones.
 - offers maintenance, high availability, options for robust management.
 - allows creation of empty databases.
