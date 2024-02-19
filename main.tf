@@ -1,6 +1,13 @@
 data "azurerm_client_config" "current" {}
+
 data "azuread_service_principal" "current" {
-  for_each = try(var.instance.ad_admin.principal_name, null) == null ? { "id" = {} } : {}
+  for_each = try(var.instance.ad_admin.principal_type, null) == null || try(var.instance.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
+
+  object_id = try(var.instance.ad_admin.principal_type, null) == null ? data.azurerm_client_config.current.object_id : try(var.instance.ad_admin.object_id, null)
+}
+
+data "azuread_user" "current" {
+  for_each = try(var.instance.ad_admin.principal_type, null) == "User" ? { "id" = {} } : {}
 
   object_id = data.azurerm_client_config.current.object_id
 }
@@ -141,6 +148,7 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   resource_group_name = var.instance.resource_group
   tenant_id           = data.azurerm_client_config.current.tenant_id
   object_id           = try(var.instance.ad_admin.object_id, data.azurerm_client_config.current.object_id)
-  principal_type      = try(var.instance.ad_admin.principal_type, "User")
-  principal_name      = try(var.instance.ad_admin.principal_name, data.azuread_service_principal.current["id"].display_name)
+  principal_type      = try(var.instance.ad_admin.principal_type, "ServicePrincipal")
+  principal_name = try(var.instance.ad_admin.principal_name, try(
+  var.instance.ad_admin.principal_type, null) == "User" ? data.azuread_user.current["id"].display_name : data.azuread_service_principal.current["id"].display_name)
 }

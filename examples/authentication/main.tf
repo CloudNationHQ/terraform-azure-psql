@@ -42,9 +42,8 @@ module "kv" {
 }
 
 module "postgresql" {
-  #source  = "cloudnationhq/psql/azure"
-  #version = "~> 0.1"
-  source = "../../"
+  source  = "cloudnationhq/psql/azure"
+  version = "~> 0.1"
 
   instance = {
     name           = module.naming.postgresql_server.name_unique
@@ -59,10 +58,14 @@ module "postgresql" {
       pw_auth = true
     }
 
-    ad_admin = { ## This is the service principal that will be set as AD admin on the PostgreSQL server, if not defined the Service Principal of the Terraform run will be used
-      object_id      = "063ad969-6d01-4c45-a8d9-bf66a0b7646c"
-      principal_name = "dennis.kool_cloudnation.nl#EXT#@dkool.onmicrosoft.com"
+    ad_admin = {
+      ## This is the ServicePrincipal or User that will be set as AD admin, 
+      ## if not defined it defaults to ServicePrincipal under the current Terraform run, 
+      ## if ran under a personal user, always provide the principal_type = "User". 
       principal_type = "User"
+      ## Optional values to add another user or service principal as an AD admin (instead of current).
+      object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
+      principal_name = "john.doe@sometenant.onmicrosoft.com"
     }
   }
 }
