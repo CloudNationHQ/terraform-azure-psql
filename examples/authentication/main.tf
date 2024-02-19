@@ -64,8 +64,8 @@ module "postgresql" {
       ## if ran under a personal user, always provide the principal_type = "User". 
       principal_type = "User"
       ## Optional values to add another user or service principal as an AD admin (instead of current).
-      object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
-      principal_name = "john.doe@sometenant.onmicrosoft.com"
+      # object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
+      # principal_name = "john.doe@sometenant.onmicrosoft.com"
     }
   }
 }
