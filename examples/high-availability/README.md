@@ -5,7 +5,7 @@ This section focuses on high availability configuration.
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   instance = {
     name           = module.naming.postgresql_server.name_unique

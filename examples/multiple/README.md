@@ -5,7 +5,7 @@ This example demonstrates the use of both configuration and resource based outpu
 ```hcl
 module "postgresql" {
   source = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   for_each = local.psql
 
