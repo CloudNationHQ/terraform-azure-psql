@@ -1,14 +1,14 @@
 locals {
   role_assignments = try(var.instance.cmk != null, false) ? {
     primary = var.instance.cmk.primary.key_vault_id
-    backup  = var.instance.cmk.backup.key_vault_id
+    backup  = try(var.instance.cmk.backup.key_vault_id, null)
   } : {}
 }
 
 locals {
   user_assigned_identities = try(var.instance.cmk != null, false) ? {
     primary = var.instance.cmk.primary != null ? { naming_suffix = "" } : null,
-    backup  = var.instance.cmk.backup != null ? { naming_suffix = "-bck" } : null
+    backup  = try(var.instance.cmk.backup, null) != null ? { naming_suffix = "-bck" } : null
   } : {}
 }
 
