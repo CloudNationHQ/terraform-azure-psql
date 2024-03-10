@@ -1,7 +1,7 @@
 locals {
   role_assignments = try(var.instance.cmk != null, false) ? {
     primary = var.instance.cmk.primary.key_vault_id
-    backup  = try(var.instance.cmk.backup.key_vault_id, null)
+    try(var.instance.cmk.backup.key_vault_id, null) != null ? backup = var.instance.cmk.backup.key_vault_id : null
   } : {}
 }
 
