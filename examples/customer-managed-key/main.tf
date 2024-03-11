@@ -108,7 +108,7 @@ module "postgresql" {
       primary = {
         key_vault_id     = module.kv.vault.id
         key_vault_key_id = module.kv.keys.psql.id
-      },
+      }
       backup = {
         key_vault_id     = module.kv_backup.vault.id
         key_vault_key_id = module.kv_backup.keys.psql.id

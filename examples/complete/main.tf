@@ -59,14 +59,14 @@ module "network" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  version = "~> 0.2"
 
   naming = local.naming
 
   for_each = {
     for key, psql in local.postgresql_servers : key => psql
   }
-  postgresql = each.value
+  instance = each.value
 
   depends_on = [module.network]
 }
@@ -81,7 +81,7 @@ module "postgresql_replicas" {
   for_each = {
     for key, psql in local.postgresql_replicas : key => psql
   }
-  postgresql = each.value
+  instance = each.value
 
   depends_on = [module.postgresql]
 }
