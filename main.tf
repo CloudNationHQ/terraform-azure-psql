@@ -32,7 +32,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   geo_redundant_backup_enabled      = try(var.instance.geo_redundant_backup, false)
   zone                              = try(var.instance.zone, null)
   create_mode                       = try(var.instance.create_mode, "Default")
-  administrator_login               = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? "${replace(var.instance.name, "-", "_")}_admin" : null
+  administrator_login               = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? try(var.instance.administrator_login, "${replace(var.instance.name, "-", "_")}_admin") : null
   administrator_password            = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? try(var.instance.admin_password, random_password.psql_admin_password.result) : null
   delegated_subnet_id               = try(var.instance.network.delegated_subnet_id, null)
   private_dns_zone_id               = try(var.instance.network.private_dns_zone_id, null)
