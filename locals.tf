@@ -1,15 +1,12 @@
 locals {
-  role_assignments = try(var.instance.cmk != null, false) ? {
-    primary = var.instance.cmk.primary.key_vault_id
-    backup  = var.instance.cmk.backup.key_vault_id
-  } : {}
-}
-
-locals {
-  user_assigned_identities = try(var.instance.cmk != null, false) ? {
-    primary = var.instance.cmk.primary != null ? { naming_suffix = "" } : null,
-    backup  = var.instance.cmk.backup != null ? { naming_suffix = "-bck" } : null
-  } : {}
+  user_assigned_identities = flatten([for uai_key, uai in lookup(var.instance, "cmk", {}) :
+    {
+      key              = uai_key
+      naming_suffix    = uai_key == "backup" ? "-bck" : ""
+      key_vault_id     = uai.key_vault_id
+      key_vault_key_id = uai.key_vault_key_id
+    } if lookup(var.instance, "cmk", null) != null
+  ])
 }
 
 locals {

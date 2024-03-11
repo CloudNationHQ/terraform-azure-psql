@@ -10,21 +10,20 @@ locals {
       storage_mb                   = 65536
       backup_retention_days        = 35
       geo_redundant_backup_enabled = true
-      zone                         = 3
+      zone                         = 1
       create_mode                  = "Default"
 
-      admin_password      = module.kv["main"].secrets.psql-admin-password.value
-      key_vault_id        = module.kv["main"].vault.id
-      key_vault_backup_id = module.kv["backup"].vault.id
-
-      identity = {
-        user_assigned_identity        = true
-        user_assigned_backup_identity = true
-      }
+      admin_password = module.kv["main"].secrets.psql-admin-password.value
 
       cmk = {
-        key_vault_key_id        = module.kv["main"].keys.psql.id
-        key_vault_backup_key_id = module.kv["backup"].keys.psql.id
+        primary = {
+          key_vault_id     = module.kv["main"].vault.id
+          key_vault_key_id = module.kv["main"].keys.psql.id
+        }
+        backup = {
+          key_vault_id     = module.kv["backup"].vault.id
+          key_vault_key_id = module.kv["backup"].keys.psql.id
+        }
       }
 
       databases = {
@@ -51,10 +50,14 @@ locals {
         pw_auth = true
       }
 
-      ad_admin = { ## This is the service principal that will be set as AD admin on the PostgreSQL server, if not defined the Service Principal of the Terraform run will be used
-        object_id      = "XXXXXXXX-YYYY-ZZZZ-AAAA-1234567890"
-        principal_name = "service-principal"
+      ad_admin = {
+        ## This is the ServicePrincipal or User that will be set as AD admin,
+        ## if not defined it defaults to ServicePrincipal under the current Terraform run,
+        ## if ran under a personal user, always provide the principal_type = "User".
         principal_type = "User"
+        ## Optional values to add another user or service principal as an AD admin (instead of current).
+        # object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
+        # principal_name = "john.doe@sometenant.onmicrosoft.com"
       }
 
       network = {
@@ -70,7 +73,7 @@ locals {
 
       high_availability = {
         mode                      = "ZoneRedundant"
-        standby_availability_zone = 1
+        standby_availability_zone = 2
       }
     }
   }
@@ -83,25 +86,25 @@ locals {
       sku_name              = "GP_Standard_D2s_v3"
       storage_mb            = 65536
       backup_retention_days = 35
-      zone                  = 3
+      zone                  = 1
 
       create_mode      = "Replica"
-      source_server_id = module.postgresql["main"].postgresql_server.id
+      source_server_id = module.postgresql["main"].instance.id
 
       admin_password      = module.kv["main"].secrets.psql-admin-password.value
       key_vault_id        = module.kv["main"].vault.id
       key_vault_backup_id = module.kv["backup"].vault.id
 
-      identity = {
-        user_assigned_identity        = true
-        user_assigned_backup_identity = true
-      }
-
       cmk = {
-        key_vault_key_id        = module.kv["main"].keys.psql.id
-        key_vault_backup_key_id = module.kv["backup"].keys.psql.id
+        primary = {
+          key_vault_id     = module.kv["main"].vault.id
+          key_vault_key_id = module.kv["main"].keys.psql.id
+        }
+        backup = {
+          key_vault_id     = module.kv["backup"].vault.id
+          key_vault_key_id = module.kv["backup"].keys.psql.id
+        }
       }
-
 
       firewall_rules = {
         rule1 = {
@@ -130,7 +133,7 @@ locals {
       backup_retention_days = 35
 
       create_mode      = "PointInTimeRestore"
-      source_server_id = module.postgresql["main"].postgresql_server.id
+      source_server_id = module.postgresql["main"].instance.id
       restore_time_utc = timeadd(timestamp(), "30m")
     }
   }

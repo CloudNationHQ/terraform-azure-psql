@@ -1,7 +1,7 @@
 data "azurerm_client_config" "current" {}
 
 data "azuread_service_principal" "current" {
-  for_each = try(var.instance.ad_admin.principal_type, null) == null || try(var.instance.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
+  for_each = try(var.instance.ad_admin.principal_type, null) == null && try(var.instance.ad_admin, null) != null || try(var.instance.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
 
   object_id = try(var.instance.ad_admin.principal_type, null) == null ? data.azurerm_client_config.current.object_id : try(var.instance.ad_admin.object_id, null)
 }
@@ -53,14 +53,14 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   }
 
   dynamic "customer_managed_key" {
-    for_each = (try(var.instance.cmk.primary, null) != null || try(var.instance.cmk.backup, null) != null) ? [1] : []
+    for_each = (try(var.instance.cmk, null) != null) ? [1] : []
 
     content {
-      key_vault_key_id                  = try(var.instance.cmk.primary.key_vault_key_id, null)
+      key_vault_key_id                  = var.instance.cmk.primary.key_vault_key_id
       primary_user_assigned_identity_id = azurerm_user_assigned_identity.identity["primary"].id
 
       geo_backup_key_vault_key_id          = try(var.instance.cmk.backup.key_vault_key_id, null)
-      geo_backup_user_assigned_identity_id = azurerm_user_assigned_identity.identity["backup"].id
+      geo_backup_user_assigned_identity_id = try(azurerm_user_assigned_identity.identity["backup"].id, null)
     }
   }
 
@@ -94,7 +94,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   }
 
   lifecycle {
-    ignore_changes = [zone, high_availability.0.standby_availability_zone]
+    ignore_changes = [zone, high_availability[0].standby_availability_zone]
   }
 
   depends_on = [azurerm_role_assignment.identity_role_assignment]
@@ -102,17 +102,17 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
 
 # user assigned identities
 resource "azurerm_user_assigned_identity" "identity" {
-  for_each = local.user_assigned_identities
+  for_each = { for uai in local.user_assigned_identities : uai.key => uai }
 
-  name                = "uai-${var.instance.name}${each.value != null ? each.value.naming_suffix : ""}"
+  name                = "uai-${var.instance.name}${each.value.naming_suffix}"
   resource_group_name = var.instance.resource_group
   location            = var.instance.location
 }
 
 resource "azurerm_role_assignment" "identity_role_assignment" {
-  for_each = local.role_assignments
+  for_each = { for uai in local.user_assigned_identities : uai.key => uai }
 
-  scope                = each.value
+  scope                = each.value.key_vault_id
   role_definition_name = "Key Vault Crypto Officer"
   principal_id         = azurerm_user_assigned_identity.identity[each.key].principal_id
 }
