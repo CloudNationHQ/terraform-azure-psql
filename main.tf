@@ -94,7 +94,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   }
 
   lifecycle {
-    ignore_changes = [zone, high_availability.0.standby_availability_zone]
+    ignore_changes = [zone, high_availability[0].standby_availability_zone]
   }
 
   depends_on = [azurerm_role_assignment.identity_role_assignment]
