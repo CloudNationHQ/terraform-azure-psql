@@ -18,8 +18,7 @@ module "rg" {
 }
 
 module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  source = "../.."
 
   naming        = local.naming
   resourcegroup = module.rg.groups.demo.name
