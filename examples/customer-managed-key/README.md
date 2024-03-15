@@ -5,7 +5,7 @@ This example details customer managed key integration.
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.2"
+  version = "~> 0.3"
 
   naming = local.naming
 
