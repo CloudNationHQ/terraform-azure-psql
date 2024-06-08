@@ -5,7 +5,7 @@ This example illustrates the default postgresql setup, in its simplest form.
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.3"
+  version = "~> 0.4"
 
   instance = {
     name           = module.naming.postgresql_server.name
