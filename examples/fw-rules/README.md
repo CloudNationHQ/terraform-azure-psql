@@ -5,7 +5,7 @@ This example highlights configuring virtual network rules for optimized network 
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.4"
+  version = "~> 0.5"
 
   naming = local.naming
 
