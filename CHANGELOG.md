@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.4.0...v0.5.0) (2024-07-02)
+
+
+### Features
+
+* add issue template ([#20](https://github.com/CloudNationHQ/terraform-azure-psql/issues/20)) ([7b6b1bb](https://github.com/CloudNationHQ/terraform-azure-psql/commit/7b6b1bbc50296add8e29624772d20f18f4d42623))
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#19](https://github.com/CloudNationHQ/terraform-azure-psql/issues/19)) ([c4cbba4](https://github.com/CloudNationHQ/terraform-azure-psql/commit/c4cbba4cccabb2ae031f5f63be1629a7ac70b06c))
+* **deps:** bump github.com/hashicorp/go-getter in /tests ([#18](https://github.com/CloudNationHQ/terraform-azure-psql/issues/18)) ([6f6357d](https://github.com/CloudNationHQ/terraform-azure-psql/commit/6f6357df78c38c4a332785e3ec12fb409378ceca))
+
 ## [0.4.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.3.0...v0.4.0) (2024-06-08)
 
 
