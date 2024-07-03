@@ -48,7 +48,8 @@ module "network" {
 }
 
 module "postgresql" {
-  source = "~> 0.1"
+  source  = "cloudnationhq/psql/azure"
+  version = "~> 0.1"
 
   instance = {
     name                          = module.naming.postgresql_server.name_unique
