@@ -8,9 +8,10 @@ module "postgresql" {
   version = "~> 0.5"
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                          = module.naming.postgresql_server.name_unique
+    location                      = module.rg.groups.demo.location
+    resource_group                = module.rg.groups.demo.name
+    public_network_access_enabled = false
 
     network = {
       delegated_subnet_id = module.network.subnets.postgresql.id
