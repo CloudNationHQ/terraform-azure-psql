@@ -48,7 +48,7 @@ module "network" {
 }
 
 module "postgresql" {
-  source = "../.."
+  source = "~> 0.1"
 
   instance = {
     name                          = module.naming.postgresql_server.name_unique
