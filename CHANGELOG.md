@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.5.0...v0.6.0) (2024-07-03)
+
+
+### Features
+
+* add public_network_access_enabled property to enhance network configuration ([#23](https://github.com/CloudNationHQ/terraform-azure-psql/issues/23)) ([77bbad3](https://github.com/CloudNationHQ/terraform-azure-psql/commit/77bbad33a7555c72193de245d79821e07435eda4))
+
 ## [0.5.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.4.0...v0.5.0) (2024-07-02)
 
 
