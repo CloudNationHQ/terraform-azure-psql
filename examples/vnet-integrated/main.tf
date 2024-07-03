@@ -19,7 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = {
     subnet                 = module.naming.subnet.name
@@ -48,13 +48,13 @@ module "network" {
 }
 
 module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  source = "../.."
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                          = module.naming.postgresql_server.name_unique
+    location                      = module.rg.groups.demo.location
+    resource_group                = module.rg.groups.demo.name
+    public_network_access_enabled = false
 
     network = {
       delegated_subnet_id = module.network.subnets.postgresql.id

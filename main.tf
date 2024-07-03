@@ -36,6 +36,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   administrator_password            = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? try(var.instance.admin_password, random_password.psql_admin_password.result) : null
   delegated_subnet_id               = try(var.instance.network.delegated_subnet_id, null)
   private_dns_zone_id               = try(var.instance.network.private_dns_zone_id, null)
+  public_network_access_enabled     = try(var.instance.public_network_access_enabled, true)
   source_server_id                  = try(var.instance.create_mode, null) == "PointInTimeRestore" || try(var.instance.create_mode, null) == "Replica" ? var.instance.source_server_id : null
   point_in_time_restore_time_in_utc = try(var.instance.create_mode, null) == "PointInTimeRestore" ? var.instance.restore_time_utc : null
   replication_role                  = try(var.instance.replication_role, null)
