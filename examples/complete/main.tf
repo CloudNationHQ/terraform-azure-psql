@@ -59,7 +59,7 @@ module "network" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.7"
+  version = "~> 1.0"
 
   naming = local.naming
 
@@ -74,7 +74,7 @@ module "postgresql" {
 
 module "postgresql_replicas" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.7"
+  version = "~> 1.0"
 
   naming = local.naming
 
