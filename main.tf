@@ -153,3 +153,13 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   principal_name = try(var.instance.ad_admin.principal_name, try(
   var.instance.ad_admin.principal_type, null) == "User" ? data.azuread_user.current["id"].display_name : data.azuread_service_principal.current["id"].display_name)
 }
+
+resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {
+  for_each = try(
+    { for key_conf, conf in var.instance.configurations : key_conf => conf }, {}
+  )
+
+  name      = each.value.name
+  server_id = azurerm_postgresql_flexible_server.postgresql.id
+  value     = each.value.value
+}
