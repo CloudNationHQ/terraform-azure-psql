@@ -66,7 +66,7 @@ resource |
 | :-- | :-- | :-- | :-- |
 | `instance` | describes psql server related configuration | object | yes |
 | `location` | default azure region and can be used if location is not specified inside the object | string | yes |
-| `resourcegroup` | default resource group and can be used if resourcegroup is not specified inside the object | string | yes |
+| `resource_group` | default resource group and can be used if resourcegroup is not specified inside the object | string | yes |
 | `naming` | used for naming purposes | string | yes |
 
 ## Outputs
