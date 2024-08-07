@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.6.0...v0.7.0) (2024-07-04)
+
+
+### Features
+
+* update contribution docs ([#25](https://github.com/CloudNationHQ/terraform-azure-psql/issues/25)) ([3353451](https://github.com/CloudNationHQ/terraform-azure-psql/commit/3353451751741f2cda17ca106114c6ce69723c75))
+
 ## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.5.0...v0.6.0) (2024-07-03)
 
 
