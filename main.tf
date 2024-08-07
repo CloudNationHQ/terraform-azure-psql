@@ -23,7 +23,7 @@ resource "random_password" "psql_admin_password" {
 # postgresql server
 resource "azurerm_postgresql_flexible_server" "postgresql" {
   name                              = var.instance.name
-  resource_group_name               = coalesce(lookup(var.instance, "resource_group", null), var.resourcegroup)
+  resource_group_name               = coalesce(lookup(var.instance, "resource_group", null), var.resource_group)
   location                          = coalesce(lookup(var.instance, "location", null), var.location)
   version                           = try(var.instance.server_version, 15)
   sku_name                          = try(var.instance.sku_name, "B_Standard_B1ms")
@@ -152,4 +152,14 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   principal_type      = try(var.instance.ad_admin.principal_type, "ServicePrincipal")
   principal_name = try(var.instance.ad_admin.principal_name, try(
   var.instance.ad_admin.principal_type, null) == "User" ? data.azuread_user.current["id"].display_name : data.azuread_service_principal.current["id"].display_name)
+}
+
+resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {
+  for_each = try(
+    { for key_conf, conf in var.instance.configurations : key_conf => conf }, {}
+  )
+
+  name      = each.value.name
+  server_id = azurerm_postgresql_flexible_server.postgresql.id
+  value     = each.value.value
 }

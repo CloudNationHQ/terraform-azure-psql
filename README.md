@@ -45,10 +45,10 @@ A last key goal is to separate logic from configuration in the module, thereby e
 | Name | Type |
 |------|------|
 | [azurerm_postgresql_flexible_server](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) | resource |
-| [azurerm_postgresql_flexible_server_active_directory_administrator](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) |
-resource |
+| [azurerm_postgresql_flexible_server_active_directory_administrator](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) | resource |
 | [azurerm_postgresql_flexible_server_database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) | resource |
 | [azurerm_postgresql_flexible_server_firewall_rule](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) | resource |
+| [azurerm_postgresql_flexible_server_configuration](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) | resource |
 | [azurerm_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
 | [azurerm_user_assigned_identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
 | [random_string](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
@@ -65,15 +65,16 @@ resource |
 | :-- | :-- | :-- | :-- |
 | `instance` | describes psql server related configuration | object | yes |
 | `location` | default azure region and can be used if location is not specified inside the object | string | yes |
-| `resourcegroup` | default resource group and can be used if resourcegroup is not specified inside the object | string | yes |
+| `resource_group` | default resource group and can be used if resourcegroup is not specified inside the object | string | yes |
 | `naming` | used for naming purposes | string | yes |
 
 ## Outputs
 
 | Name | Description |
 | :-- | :-- |
-| `instance` | contains all psql flexible server config |
+| `instance` | contains all psql flexible server attributes |
 | `databases` | contains all databases |
+| `configurations` | contains all psql flexible server configurations |
 
 ## Testing
 

@@ -1,4 +1,4 @@
-This example highlights configuring virtual network rules for optimized network integration.
+This example illustrates configuring multiple databases.
 
 ## Usage
 
@@ -14,14 +14,14 @@ module "postgresql" {
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
 
-    fw_rules = {
-      sales = {
-        start_ip_address = "10.20.30.1"
-        end_ip_address   = "10.20.30.255"
+    configurations = {
+      config1 = {
+        name  = "azure.extensions"
+        value = "CUBE,CITEXT,BTREE_GIST"
       }
-      hr = {
-        start_ip_address = "10.20.31.1"
-        end_ip_address   = "10.20.31.255"
+      config2 = {
+        name  = "azure.extensions"
+        value = "CITEXT,HSTORE,UUID-OSSP"
       }
     }
   }
