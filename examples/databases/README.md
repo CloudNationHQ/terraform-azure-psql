@@ -5,7 +5,7 @@ This example illustrates configuring multiple databases.
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.6"
+  version = "~> 0.7"
 
   naming = local.naming
 
