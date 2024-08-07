@@ -9,6 +9,12 @@
     * feat: add psql flexible server configurations, including example and updated docs
     * feat: update module versions to 1.0
 
+### Upgrade from v0.7.0 to v1.0.0
+
+- Update **module reference** to: `version = "~> 1.0"`
+- Rename **variable** (optional):
+   * resourcegroup -> resource_group
+
 ### Features
 
 * add psql flexible server configurations ([#29](https://github.com/CloudNationHQ/terraform-azure-psql/issues/29)) ([912abc0](https://github.com/CloudNationHQ/terraform-azure-psql/commit/912abc0df8a4e095ba8d83d876ee94b559b05b8d))
