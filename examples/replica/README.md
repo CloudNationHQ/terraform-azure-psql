@@ -5,7 +5,7 @@ This example highlights configuring replicas.
 ```hcl
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.6"
+  version = "~> 1.0"
 
   instance = {
     name           = module.naming.postgresql_server.name
@@ -17,7 +17,7 @@ module "postgresql" {
 
 module "postgresql_repl" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 0.1"
+  version = "~> 1.0"
 
   instance = {
     name           = join("-", [module.naming.postgresql_server.name, "repl"])

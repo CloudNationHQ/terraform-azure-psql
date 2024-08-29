@@ -12,7 +12,7 @@ module "rg" {
   groups = {
     demo = {
       name   = module.naming.resource_group.name
-      region = "westeurope"
+      region = "northeurope"
     }
   }
 }
@@ -22,14 +22,19 @@ module "postgresql" {
   version = "~> 1.0"
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
+    name           = module.naming.postgresql_server.name
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
 
-    maintenance = {
-      day_of_week  = "0"
-      start_hour   = "20"
-      start_minute = "30"
+    configurations = {
+      config1 = {
+        name  = "azure.extensions"
+        value = "CUBE,CITEXT,BTREE_GIST"
+      }
+      config2 = {
+        name  = "azure.extensions"
+        value = "CITEXT,HSTORE,UUID-OSSP"
+      }
     }
   }
 }

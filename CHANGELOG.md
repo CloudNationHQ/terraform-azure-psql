@@ -1,5 +1,31 @@
 # Changelog
 
+## [1.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.7.0...v1.0.0) (2024-08-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* update of data structure as variable got renamed
+    * feat: add psql flexible server configurations, including example and updated docs
+    * feat: update module versions to 1.0
+
+### Upgrade from v0.7.0 to v1.0.0
+
+- Update **module reference** to: `version = "~> 1.0"`
+- Rename **variable** (optional):
+   * resourcegroup -> resource_group
+
+### Features
+
+* add psql flexible server configurations ([#29](https://github.com/CloudNationHQ/terraform-azure-psql/issues/29)) ([912abc0](https://github.com/CloudNationHQ/terraform-azure-psql/commit/912abc0df8a4e095ba8d83d876ee94b559b05b8d))
+
+## [0.7.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.6.0...v0.7.0) (2024-07-04)
+
+
+### Features
+
+* update contribution docs ([#25](https://github.com/CloudNationHQ/terraform-azure-psql/issues/25)) ([3353451](https://github.com/CloudNationHQ/terraform-azure-psql/commit/3353451751741f2cda17ca106114c6ce69723c75))
+
 ## [0.6.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.5.0...v0.6.0) (2024-07-03)
 
 
