@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v1.0.0...v1.1.0) (2024-08-29)
+
+
+### Features
+
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#27](https://github.com/CloudNationHQ/terraform-azure-psql/issues/27)) ([247417a](https://github.com/CloudNationHQ/terraform-azure-psql/commit/247417a24dfdf40002774f440d6373073ec98cc6))
+* update documentation ([#31](https://github.com/CloudNationHQ/terraform-azure-psql/issues/31)) ([d4de9e7](https://github.com/CloudNationHQ/terraform-azure-psql/commit/d4de9e78a4b8d5b3a70c62c521ee8e63e81bbef8))
+
 ## [1.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v0.7.0...v1.0.0) (2024-08-07)
 
 
