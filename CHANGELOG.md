@@ -1,5 +1,16 @@
 # Changelog
 
+## [2.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v1.1.0...v2.0.0) (2024-09-24)
+
+
+### ⚠ BREAKING CHANGES
+
+* * Version 4 of the azurerm provider includes breaking changes.
+
+### Features
+
+* upgrade azurerm provder to v4 ([#34](https://github.com/CloudNationHQ/terraform-azure-psql/issues/34)) ([ba41165](https://github.com/CloudNationHQ/terraform-azure-psql/commit/ba41165f1c7b2a3b17882a00b2f3d5f02586cd59))
+
 ## [1.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v1.0.0...v1.1.0) (2024-08-29)
 
 
