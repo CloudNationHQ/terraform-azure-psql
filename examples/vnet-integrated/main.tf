@@ -7,19 +7,19 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   groups = {
     demo = {
-      name   = module.naming.resource_group.name
-      region = "northeurope"
+      name     = module.naming.resource_group.name
+      location = "northeurope"
     }
   }
 }
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   naming = {
     subnet                 = module.naming.subnet.name
@@ -28,10 +28,10 @@ module "network" {
   }
 
   vnet = {
-    name          = module.naming.virtual_network.name
-    location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
-    cidr          = ["10.18.0.0/16"]
+    name           = module.naming.virtual_network.name
+    location       = module.rg.groups.demo.location
+    resource_group = module.rg.groups.demo.name
+    cidr           = ["10.18.0.0/16"]
 
     subnets = {
       postgresql = {
@@ -49,7 +49,7 @@ module "network" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   instance = {
     name                          = module.naming.postgresql_server.name_unique
@@ -66,7 +66,7 @@ module "postgresql" {
 
 module "private_dns" {
   source  = "cloudnationhq/psql/azure//modules/private-dns"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   providers = {
     azurerm = azurerm.connectivity
