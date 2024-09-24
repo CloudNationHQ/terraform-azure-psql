@@ -9,7 +9,7 @@
 
 ### Features
 
-* upgrade azurerm provder to v4 ([#34](https://github.com/CloudNationHQ/terraform-azure-psql/issues/34)) ([ba41165](https://github.com/CloudNationHQ/terraform-azure-psql/commit/ba41165f1c7b2a3b17882a00b2f3d5f02586cd59))
+* upgrade azurerm provider to v4 ([#34](https://github.com/CloudNationHQ/terraform-azure-psql/issues/34)) ([ba41165](https://github.com/CloudNationHQ/terraform-azure-psql/commit/ba41165f1c7b2a3b17882a00b2f3d5f02586cd59))
 
 ### Upgrade from v1.1.0 to v2.0.0:
 
