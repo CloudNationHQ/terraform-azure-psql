@@ -1,9 +1,9 @@
 locals {
   key_vaults = {
     main = {
-      name          = "${module.naming.key_vault.name_unique}-main"
-      location      = module.rg.groups.demo.location
-      resourcegroup = module.rg.groups.demo.name
+      name           = "${module.naming.key_vault.name_unique}-main"
+      location       = module.rg.groups.demo.location
+      resource_group = module.rg.groups.demo.name
 
       keys = {
         psql = {
@@ -41,9 +41,9 @@ locals {
       }
     }
     backup = {
-      name          = "${module.naming.key_vault.name_unique}-backup"
-      location      = "westus"
-      resourcegroup = module.rg.groups.demo.name
+      name           = "${module.naming.key_vault.name_unique}-backup"
+      location       = "westus"
+      resource_group = module.rg.groups.demo.name
 
       keys = {
         psql = {

@@ -7,19 +7,19 @@ module "naming" {
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   groups = {
     demo = {
-      name   = module.naming.resource_group.name
-      region = "westeurope"
+      name     = module.naming.resource_group.name
+      location = "westeurope"
     }
   }
 }
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 0.2"
+  version = "~> 2.0"
 
   for_each = {
     for key, kv in local.key_vaults : key => kv
@@ -33,15 +33,15 @@ module "kv" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 0.1"
+  version = "~> 4.0"
 
   naming = local.naming
 
   vnet = {
-    name          = module.naming.virtual_network.name
-    location      = module.rg.groups.demo.location
-    resourcegroup = module.rg.groups.demo.name
-    cidr          = ["10.18.0.0/16"]
+    name           = module.naming.virtual_network.name
+    location       = module.rg.groups.demo.location
+    resource_group = module.rg.groups.demo.name
+    cidr           = ["10.18.0.0/16"]
 
     subnets = {
       psql = {
@@ -59,7 +59,7 @@ module "network" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = local.naming
 
@@ -74,7 +74,7 @@ module "postgresql" {
 
 module "postgresql_replicas" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+  version = "~> 2.0"
 
   naming = local.naming
 
@@ -88,15 +88,15 @@ module "postgresql_replicas" {
 
 module "private_dns" {
   source  = "cloudnationhq/psql/azure//modules/private-dns"
-  version = "~> 0.1"
+  version = "~> 2.0"
 
   providers = {
     azurerm = azurerm.connectivity
   }
 
   zone = {
-    name          = "privatelink.postgres.database.azure.com"
-    resourcegroup = "rg-dns-shared-001"
-    vnet          = module.network.vnet.id
+    name           = "privatelink.postgres.database.azure.com"
+    resource_group = "rg-dns-shared-001"
+    vnet           = module.network.vnet.id
   }
 }
