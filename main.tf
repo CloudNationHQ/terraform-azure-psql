@@ -27,7 +27,7 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   name                              = var.instance.name
   resource_group_name               = coalesce(lookup(var.instance, "resource_group", null), var.resource_group)
   location                          = coalesce(lookup(var.instance, "location", null), var.location)
-  version                           = try(var.instance.server_version, 16)
+  version                           = try(var.instance.version, 16)
   sku_name                          = try(var.instance.sku_name, "B_Standard_B1ms")
   storage_mb                        = try(var.instance.storage_mb, 32768)
   backup_retention_days             = try(var.instance.backup_retention_days, null)

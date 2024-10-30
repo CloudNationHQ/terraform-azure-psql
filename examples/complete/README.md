@@ -7,7 +7,7 @@ instance = object({
   name                          = string
   location                      = string
   resource_group                = string
-  server_version                = optional(number, 16)
+  version                       = optional(number, 16)
   sku_name                      = optional(string, "B_Standard_B1ms")
   storage_mb                    = optional(number, 32768)
   backup_retention_days         = optional(number)
@@ -21,7 +21,7 @@ instance = object({
 
   create_mode      = optional(string, "Default")
   source_server_id = optional(string) ## Only needed if PointInTimeRestore or Replica
-  
+
   point_in_time_restore_time_in_utc = optional(string) ## Only needed if PointInTimeRestore
 
   delegated_subnet_id = optional(string)
