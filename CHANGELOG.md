@@ -1,5 +1,16 @@
 # Changelog
 
+## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v2.1.0...v3.0.0) (2024-10-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* update provider azuread to new major version, renamed properties.  ([#40](https://github.com/CloudNationHQ/terraform-azure-psql/issues/40))
+
+### Features
+
+* update provider azuread to new major version, renamed properties.  ([#40](https://github.com/CloudNationHQ/terraform-azure-psql/issues/40)) ([506a9c8](https://github.com/CloudNationHQ/terraform-azure-psql/commit/506a9c83cc0b20c8548b0266fa062de8ffa2edc1))
+
 ## [2.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v2.0.0...v2.1.0) (2024-10-11)
 
 
