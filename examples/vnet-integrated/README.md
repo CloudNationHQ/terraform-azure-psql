@@ -3,20 +3,13 @@ This section outlines vnet integration for improved database connectivity.
 ## Usage
 
 ```hcl
-module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+instance = object({
+  name                          = string
+  location                      = string
+  resource_group                = string
+  public_network_access_enabled = optional(bool, true)
 
-  instance = {
-    name                          = module.naming.postgresql_server.name_unique
-    location                      = module.rg.groups.demo.location
-    resource_group                = module.rg.groups.demo.name
-    public_network_access_enabled = false
-
-    network = {
-      delegated_subnet_id = module.network.subnets.postgresql.id
-      private_dns_zone_id = module.private_dns.zone.id
-    }
-  }
-}
+  delegated_subnet_id  = optional(string)
+  private_dns_zone_id  = optional(string)
+})
 ```
