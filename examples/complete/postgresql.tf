@@ -62,7 +62,7 @@ locals {
 
     network = {
       delegated_subnet_id = module.network.subnets.psql.id
-      private_dns_zone_id = module.private_dns.zones.psql.id
+      private_dns_zone_id = module.private_dns.private_zones.psql.id
     }
 
     maintenance_window = {
@@ -117,7 +117,7 @@ locals {
 
       network = {
         delegated_subnet_id = module.network.subnets.psql.id
-        private_dns_zone_id = module.private_dns.zones.psql.id
+        private_dns_zone_id = module.private_dns.private_zones.psql.id
       }
     }
     restore = {

@@ -59,16 +59,18 @@ module "network" {
 
 module "private_dns" {
   source  = "cloudnationhq/pdns/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   zones = {
-    psql = {
-      name           = "privatelink.postgres.database.azure.com"
-      resource_group = module.rg.groups.demo.name
+    private = {
+      psql = {
+        name           = "privatelink.postgres.database.azure.com"
+        resource_group = module.rg.groups.demo.name
 
-      virtual_network_links = {
-        psql = {
-          virtual_network_id = module.network.vnet.id
+        virtual_network_links = {
+          psql = {
+            virtual_network_id = module.network.vnet.id
+          }
         }
       }
     }
