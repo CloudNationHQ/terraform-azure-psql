@@ -19,7 +19,7 @@ module "rg" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   instance = {
     name           = module.naming.postgresql_server.name
@@ -31,7 +31,7 @@ module "postgresql" {
 
 module "postgresql_repl" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   instance = {
     name           = join("-", [module.naming.postgresql_server.name, "repl"])
@@ -40,6 +40,6 @@ module "postgresql_repl" {
     sku_name       = "GP_Standard_D2s_v3"
 
     create_mode      = "Replica"
-    source_server_id = module.postgresql.postgresql_server.id
+    source_server_id = module.postgresql.server.id
   }
 }

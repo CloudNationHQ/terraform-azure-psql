@@ -1,23 +1,17 @@
 This example illustrates configuring multiple databases.
 
-## Usage
+## Types
 
 ```hcl
-module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+instance = object({
+  name           = string
+  location       = string
+  resource_group = string
 
-  naming = local.naming
-
-  instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    databases = {
-      user  = { charset = "UTF8" }
-      order = {}
-    }
-  }
-}
+  databases = optional(map(object({
+    name      = optional(string) #if not provided, it will be derived from the key
+    charset   = optional(string, "UTF8")
+    collation = optional(string)
+  })))
+})
 ```

@@ -1,21 +1,16 @@
 This example illustrates the default postgresql setup, in its simplest form.
 
-## Usage: default
+## Types
 
 ```hcl
-module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
-
-  instance = {
-    name           = module.naming.postgresql_server.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-  }
-}
+instance = object({
+  name           = string
+  location       = string
+  resource_group = string
+})
 ```
 
-Additionally, for certain scenarios, the example below highlights the ability to use multiple instances.
+Additionally, for certain scenarios, the example below highlights the ability to use multiple server instances.
 
 ## Usage: multiple
 
@@ -31,7 +26,7 @@ module "postgresql" {
 }
 ```
 
-The module uses a local to iterate, generating a postgresql flexible server for each key.
+Below a local is used to iterate, generating a postgresql flexible server for each key.
 
 ```hcl
 locals {
