@@ -1,4 +1,4 @@
-output "instance" {
+output "server" {
   description = "contains all psql flexible server attributes"
   value       = azurerm_postgresql_flexible_server.postgresql
 }

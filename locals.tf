@@ -1,11 +1,11 @@
 locals {
-  user_assigned_identities = flatten([for uai_key, uai in lookup(var.instance, "cmk", {}) :
+  user_assigned_identities = flatten([for uai_key, uai in lookup(var.instance, "customer_managed_key", {}) :
     {
       key              = uai_key
       naming_suffix    = uai_key == "backup" ? "-bck" : ""
       key_vault_id     = uai.key_vault_id
       key_vault_key_id = uai.key_vault_key_id
-    } if lookup(var.instance, "cmk", null) != null
+    } if lookup(var.instance, "customer_managed_key", null) != null
   ])
 }
 

@@ -13,6 +13,8 @@ data "azuread_user" "current" {
 }
 
 resource "random_password" "psql_admin_password" {
+  for_each = try(var.instance.authentication.password_auth_enabled, true) == true ? { "pw" = {} } : {}
+
   length           = 16
   min_lower        = 1
   min_upper        = 1
@@ -25,53 +27,53 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   name                              = var.instance.name
   resource_group_name               = coalesce(lookup(var.instance, "resource_group", null), var.resource_group)
   location                          = coalesce(lookup(var.instance, "location", null), var.location)
-  version                           = try(var.instance.server_version, 15)
+  version                           = try(var.instance.server_version, 16)
   sku_name                          = try(var.instance.sku_name, "B_Standard_B1ms")
   storage_mb                        = try(var.instance.storage_mb, 32768)
   backup_retention_days             = try(var.instance.backup_retention_days, null)
-  geo_redundant_backup_enabled      = try(var.instance.geo_redundant_backup, false)
+  geo_redundant_backup_enabled      = try(var.instance.geo_redundant_backup_enabled, false)
   zone                              = try(var.instance.zone, null)
   create_mode                       = try(var.instance.create_mode, "Default")
-  administrator_login               = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? try(var.instance.administrator_login, "${replace(var.instance.name, "-", "_")}_admin") : null
-  administrator_password            = try(var.instance.create_mode, "Default") == "Default" || try(var.instance.enabled.pw_auth, null) == true ? try(var.instance.admin_password, random_password.psql_admin_password.result) : null
-  delegated_subnet_id               = try(var.instance.network.delegated_subnet_id, null)
-  private_dns_zone_id               = try(var.instance.network.private_dns_zone_id, null)
+  administrator_login               = try(var.instance.create_mode, "Default") == "Default" && try(var.instance.authentication.password_auth_enabled, true) == true ? try(var.instance.administrator_login, "${replace(var.instance.name, "-", "_")}_admin") : null
+  administrator_password            = try(var.instance.create_mode, "Default") == "Default" && try(var.instance.authentication.password_auth_enabled, true) == true ? try(var.instance.administrator_password, random_password.psql_admin_password["pw"].result) : null
+  delegated_subnet_id               = try(var.instance.delegated_subnet_id, null)
+  private_dns_zone_id               = try(var.instance.private_dns_zone_id, null)
   public_network_access_enabled     = try(var.instance.public_network_access_enabled, true)
   source_server_id                  = try(var.instance.create_mode, null) == "PointInTimeRestore" || try(var.instance.create_mode, null) == "Replica" ? var.instance.source_server_id : null
-  point_in_time_restore_time_in_utc = try(var.instance.create_mode, null) == "PointInTimeRestore" ? var.instance.restore_time_utc : null
+  point_in_time_restore_time_in_utc = try(var.instance.create_mode, null) == "PointInTimeRestore" ? var.instance.point_in_time_restore_time_in_utc : null
   replication_role                  = try(var.instance.replication_role, null)
 
   dynamic "identity" {
-    for_each = (try(var.instance.cmk.primary, null) != null || try(var.instance.cmk.backup, null) != null) ? [1] : []
+    for_each = (try(var.instance.customer_managed_key.primary, null) != null || try(var.instance.customer_managed_key.backup, null) != null) ? [1] : []
 
     content {
       type = "UserAssigned"
       identity_ids = compact([
-        try(var.instance.cmk.primary, null) != null ? azurerm_user_assigned_identity.identity["primary"].id : "",
-        try(var.instance.cmk.backup, null) != null ? azurerm_user_assigned_identity.identity["backup"].id : ""
+        try(var.instance.customer_managed_key.primary, null) != null ? azurerm_user_assigned_identity.identity["primary"].id : "",
+        try(var.instance.customer_managed_key.backup, null) != null ? azurerm_user_assigned_identity.identity["backup"].id : ""
       ])
     }
   }
 
   dynamic "customer_managed_key" {
-    for_each = (try(var.instance.cmk, null) != null) ? [1] : []
+    for_each = (try(var.instance.customer_managed_key, null) != null) ? [1] : []
 
     content {
-      key_vault_key_id                  = var.instance.cmk.primary.key_vault_key_id
+      key_vault_key_id                  = var.instance.customer_managed_key.primary.key_vault_key_id
       primary_user_assigned_identity_id = azurerm_user_assigned_identity.identity["primary"].id
 
-      geo_backup_key_vault_key_id          = try(var.instance.cmk.backup.key_vault_key_id, null)
+      geo_backup_key_vault_key_id          = try(var.instance.customer_managed_key.backup.key_vault_key_id, null)
       geo_backup_user_assigned_identity_id = try(azurerm_user_assigned_identity.identity["backup"].id, null)
     }
   }
 
   dynamic "authentication" {
-    for_each = try(var.instance.enabled, null) != null ? [1] : []
+    for_each = try(var.instance.authentication, null) != null ? [1] : []
 
     content {
-      active_directory_auth_enabled = try(var.instance.enabled.ad_auth, true)
-      password_auth_enabled         = try(var.instance.enabled.pw_auth, true)
-      tenant_id                     = try(var.instance.enabled.ad_auth == true ? data.azurerm_client_config.current.tenant_id : null, null)
+      active_directory_auth_enabled = try(var.instance.authentication.active_directory_auth_enabled, false)
+      password_auth_enabled         = try(var.instance.authentication.password_auth_enabled, true)
+      tenant_id                     = try(var.instance.authentication.active_directory_auth_enabled == true ? data.azurerm_client_config.current.tenant_id : null, null)
     }
   }
 
@@ -85,12 +87,12 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   }
 
   dynamic "maintenance_window" {
-    for_each = try(var.instance.maintenance, null) != null ? [1] : []
+    for_each = try(var.instance.maintenance_window, null) != null ? [1] : []
 
     content {
-      day_of_week  = try(var.instance.maintenance.day_of_week, null)
-      start_hour   = try(var.instance.maintenance.start_hour, null)
-      start_minute = try(var.instance.maintenance.start_minute, null)
+      day_of_week  = try(var.instance.maintenance_window.day_of_week, null)
+      start_hour   = try(var.instance.maintenance_window.start_hour, null)
+      start_minute = try(var.instance.maintenance_window.start_minute, null)
     }
   }
 
@@ -143,7 +145,7 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "postgresql" {
 }
 
 resource "azurerm_postgresql_flexible_server_active_directory_administrator" "postgresql" {
-  for_each = try(var.instance.enabled.ad_auth, null) == true ? { "ad_auth" = {} } : {}
+  for_each = try(var.instance.authentication.active_directory_auth_enabled, null) == true ? { "ad_auth" = {} } : {}
 
   server_name         = azurerm_postgresql_flexible_server.postgresql.name
   resource_group_name = var.instance.resource_group
