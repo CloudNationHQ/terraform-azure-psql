@@ -41,8 +41,8 @@ locals {
       }
     }
     backup = {
-      name           = "${module.naming.key_vault.name_unique}-backup"
-      location       = "westus"
+      name           = "${module.naming.key_vault.name_unique}-bu"
+      location       = "westeurope"
       resource_group = module.rg.groups.demo.name
 
       keys = {

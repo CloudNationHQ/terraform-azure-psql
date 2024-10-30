@@ -12,7 +12,7 @@ module "rg" {
   groups = {
     demo = {
       name     = module.naming.resource_group.name
-      location = "westeurope"
+      location = "northeurope"
     }
   }
 }
@@ -33,7 +33,7 @@ module "kv" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 4.0"
+  version = "~> 7.0"
 
   naming = local.naming
 
@@ -49,7 +49,7 @@ module "network" {
         delegations = {
           psql-delegation = {
             name    = "Microsoft.DBforPostgreSQL/flexibleServers"
-            actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+            actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
           }
         }
       }
@@ -57,16 +57,32 @@ module "network" {
   }
 }
 
-module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
+module "private_dns" {
+  source  = "cloudnationhq/pdns/azure"
   version = "~> 2.0"
 
-  naming = local.naming
+  zones = {
+    psql = {
+      name           = "privatelink.postgres.database.azure.com"
+      resource_group = module.rg.groups.demo.name
 
-  for_each = {
-    for key, psql in local.postgresql_servers : key => psql
+      virtual_network_links = {
+        psql = {
+          virtual_network_id = module.network.vnet.id
+        }
+      }
+    }
   }
-  instance = each.value
+
+  depends_on = [module.network]
+}
+
+module "postgresql" {
+  source  = "cloudnationhq/psql/azure"
+  version = "~> 3.0"
+
+  naming   = local.naming
+  instance = local.postgresql_server
 
   depends_on = [module.network]
 }
@@ -74,7 +90,7 @@ module "postgresql" {
 
 module "postgresql_replicas" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -84,19 +100,4 @@ module "postgresql_replicas" {
   instance = each.value
 
   depends_on = [module.postgresql]
-}
-
-module "private_dns" {
-  source  = "cloudnationhq/psql/azure//modules/private-dns"
-  version = "~> 2.0"
-
-  providers = {
-    azurerm = azurerm.connectivity
-  }
-
-  zone = {
-    name           = "privatelink.postgres.database.azure.com"
-    resource_group = "rg-dns-shared-001"
-    vnet           = module.network.vnet.id
-  }
 }
