@@ -1,31 +1,24 @@
 This example details customer managed key integration.
 
-## Usage
+## Types
 
 ```hcl
-module "postgresql" {
-  source  = "cloudnationhq/psql/azure"
-  version = "~> 1.0"
+instance = object({
+  name                = string
+  location            = string
+  resource_group      = string
 
-  naming = local.naming
+  geo_redundant_backup_enabled = optional(bool, false)
 
-  instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-
-    geo_redundant_backup = true
-
-    cmk = {
-      primary = {
-        key_vault_id     = module.kv.vault.id
-        key_vault_key_id = module.kv.keys.psql.id
-      },
-      backup = {
-        key_vault_id     = module.kv_backup.vault.id
-        key_vault_key_id = module.kv_backup.keys.psql.id
-      }
-    }
-  }
-}
+  customer_managed_key = optional(object({
+    primary = object({
+      key_vault_id     = string
+      key_vault_key_id = string
+    })
+    backup = optional(object({
+      key_vault_id     = string
+      key_vault_key_id = string
+    }))
+  }))
+})
 ```

@@ -82,7 +82,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 |------|-------------|
 | <a name="output_configurations"></a> [configurations](#output\_configurations) | contains all psql flexible server configurations |
 | <a name="output_databases"></a> [databases](#output\_databases) | contains all databases |
-| <a name="output_instance"></a> [instance](#output\_instance) | contains all psql flexible server attributes |
+| <a name="output_server"></a> [server](#output\_server) | contains all psql flexible server attributes |
 <!-- END_TF_DOCS -->
 
 ## Testing

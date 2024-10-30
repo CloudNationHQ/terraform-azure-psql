@@ -1,13 +1,42 @@
-This readme contains multiple examples in how to setup the AD admin.
-In these examples, the principal_type field is used to specify whether a User should be used for authentication. By default, if principal_type is not specified, Terraform assumes that a Service Principal (SP) is being used. This is because in most cases, Terraform is run in an automated environment under a Service Principal.
+# AD & Password Authentication
+This README provides examples for setting up the AD admin.
 
-However, if you're running Terraform under a User account and want to use that User for authentication, then you need to explicitly set principal_type = "User".
+* principal_type specifies whether to use a User or Service Principal for authentication.
+  - Default: ServicePrincipal (assumed when running Terraform in automated environments).
+Set principal_type = "User" if running Terraform under a User account.
 
-The object_id and principal_name fields are optional and are used to specify a particular User or Service Principal. If they are not provided, then the currently logged-in Service Principal (or User, if principal_type = "User") is used.
+* object_id and principal_name are optional and allow you to specify a different User or Service Principal. If not provided, the currently logged-in Service Principal (or User, if applicable) is used.
+
+See all usage examples further below.
+
+## Types
+
+```hcl
+instance = object({
+  name           = string
+  location       = string
+  resource_group = string
+
+  admin_password = optional(string)
+
+  authentication = optional(object({
+    active_directory_auth_enabled = optional(bool, true)
+    password_auth_enabled         = optional(bool, true)
+    tenant_id                     = optional(string)
+  }))
+
+  ad_admin = optional(object({
+    principal_type = optional(string, 'ServicePrincipal')
+  
+    object_id      = optional(string)
+    principal_name = optional(string)
+  }))
+})
+```
 
 ## Usage - "User" (current): AD admin will be set as the current logged in user under which Terraform runs. 
 This configuration sets the Azure Active Directory (AD) admin as the user account which is currently logged into Terraform. 
-This means the logged-in user's credentials will be used to authenticate to the Azure PostgreSQL instance.
+This means the logged-in user's credentials will be used to authenticate to the Azure PostgreSQL Server.
 
 ```hcl
 module "postgresql" {
@@ -36,7 +65,7 @@ module "postgresql" {
 
 ## Usage - "ServicePrincipal" (current): AD admin will be set as the current logged in SP under which Terraform runs. 
 This configuration sets the AD admin as the Service Principal (SP) that is currently being used by Terraform. 
-This means that the credentials of the current Service Principal will be used for authentication with the Azure PostgreSQL instance.
+This means that the credentials of the current Service Principal will be used for authentication with the Azure PostgreSQL Server.
 
 ```hcl
 module "postgresql" {
@@ -58,8 +87,7 @@ module "postgresql" {
   }
 }
 
-In this example, principal_type = "ServicePrincipal" is not explicitly set. This is because when this field is not provided, 
-Terraform will default to using the currently logged-in Service Principal.
+In this example, principal_type = "ServicePrincipal" is not explicitly set. This is because when this field is not provided, Terraform will default to using the currently logged-in Service Principal.
 ```
 
 ## Usage - Explicit "User" specified
@@ -121,5 +149,4 @@ module "postgresql" {
     }
   }
 }
-
 ```

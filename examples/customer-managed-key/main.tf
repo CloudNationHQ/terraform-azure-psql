@@ -93,7 +93,7 @@ module "kv_backup" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   naming = local.naming
 
@@ -102,9 +102,9 @@ module "postgresql" {
     location       = module.rg.groups.demo.location
     resource_group = module.rg.groups.demo.name
 
-    geo_redundant_backup = true
+    geo_redundant_backup_enabled = true
 
-    cmk = {
+    customer_managed_key = {
       primary = {
         key_vault_id     = module.kv.vault.id
         key_vault_key_id = module.kv.keys.psql.id

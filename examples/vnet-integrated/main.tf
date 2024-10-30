@@ -19,7 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 4.0"
+  version = "~> 7.0"
 
   naming = {
     subnet                 = module.naming.subnet.name
@@ -39,7 +39,7 @@ module "network" {
         delegations = {
           psql = {
             name    = "Microsoft.DBforPostgreSQL/flexibleServers"
-            actions = ["Microsoft.Network/virtualNetworks/subnets/action"]
+            actions = ["Microsoft.Network/virtualNetworks/subnets/join/action"]
           }
         }
       }
@@ -47,9 +47,31 @@ module "network" {
   }
 }
 
+module "private_dns" {
+  source  = "cloudnationhq/pdns/azure"
+  version = "~> 3.0"
+
+  zones = {
+    private = {
+      psql = {
+        name           = "privatelink.postgres.database.azure.com"
+        resource_group = module.rg.groups.demo.name
+
+        virtual_network_links = {
+          psql = {
+            virtual_network_id = module.network.vnet.id
+          }
+        }
+      }
+    }
+  }
+
+  depends_on = [module.network]
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   instance = {
     name                          = module.naming.postgresql_server.name_unique
@@ -57,24 +79,8 @@ module "postgresql" {
     resource_group                = module.rg.groups.demo.name
     public_network_access_enabled = false
 
-    network = {
-      delegated_subnet_id = module.network.subnets.postgresql.id
-      private_dns_zone_id = module.private_dns.zone.id
-    }
-  }
-}
+    delegated_subnet_id = module.network.subnets.postgresql.id
+    private_dns_zone_id = module.private_dns.private_zones.psql.id
 
-module "private_dns" {
-  source  = "cloudnationhq/psql/azure//modules/private-dns"
-  version = "~> 2.0"
-
-  providers = {
-    azurerm = azurerm.connectivity
-  }
-
-  zone = {
-    name          = "privatelink.postgres.database.azure.com"
-    resourcegroup = "rg-dns-shared-001"
-    vnet          = module.network.vnet.id
   }
 }

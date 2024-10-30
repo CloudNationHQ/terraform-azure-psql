@@ -12,14 +12,14 @@ module "rg" {
   groups = {
     demo = {
       name     = module.naming.resource_group.name
-      location = "westeurope"
+      location = "uksouth"
     }
   }
 }
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   instance = {
     name           = module.naming.postgresql_server.name_unique
