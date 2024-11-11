@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.0.0...v3.1.0) (2024-11-11)
+
+
+### Features
+
+* enhance testing with sequential, parallel modes and flags for exceptions and skip-destroy ([#42](https://github.com/CloudNationHQ/terraform-azure-psql/issues/42)) ([305c68c](https://github.com/CloudNationHQ/terraform-azure-psql/commit/305c68c08bae6d468cb05399b1b551c39f5e0c63))
+
 ## [3.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v2.1.0...v3.0.0) (2024-10-30)
 
 
