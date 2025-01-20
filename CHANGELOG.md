@@ -1,5 +1,14 @@
 # Changelog
 
+## [3.2.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.1.0...v3.2.0) (2025-01-20)
+
+
+### Features
+
+* **deps:** bump github.com/gruntwork-io/terratest in /tests ([#45](https://github.com/CloudNationHQ/terraform-azure-psql/issues/45)) ([38e49cb](https://github.com/CloudNationHQ/terraform-azure-psql/commit/38e49cbdd14570042f96f95a8dccc0917d38c500))
+* **deps:** bump golang.org/x/net from 0.31.0 to 0.33.0 in /tests ([#48](https://github.com/CloudNationHQ/terraform-azure-psql/issues/48)) ([de1a118](https://github.com/CloudNationHQ/terraform-azure-psql/commit/de1a1188f9e85d09d93caf54bea8acf28f169188))
+* remove temporary files when deployment tests fails ([#46](https://github.com/CloudNationHQ/terraform-azure-psql/issues/46)) ([25751c9](https://github.com/CloudNationHQ/terraform-azure-psql/commit/25751c977a1ce65d674420c0884cdd63aa658001))
+
 ## [3.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.0.0...v3.1.0) (2024-11-11)
 
 
