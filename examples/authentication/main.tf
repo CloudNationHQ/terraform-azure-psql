@@ -43,7 +43,7 @@ module "kv" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   instance = {
     name           = module.naming.postgresql_server.name_unique
