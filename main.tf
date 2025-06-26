@@ -145,15 +145,15 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "postgresql" {
 }
 
 resource "azurerm_postgresql_flexible_server_active_directory_administrator" "postgresql" {
-  for_each = try(var.instance.authentication.active_directory_auth_enabled, null) == true ? { "ad_auth" = {} } : {}
+  for_each = try(var.instance.authentication.active_directory_auth_enabled, null) == true ? try(var.instance.ad_admins, {}) : {}
 
   server_name         = azurerm_postgresql_flexible_server.postgresql.name
   resource_group_name = var.instance.resource_group
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = try(var.instance.ad_admin.object_id, data.azurerm_client_config.current.object_id)
-  principal_type      = try(var.instance.ad_admin.principal_type, "ServicePrincipal")
-  principal_name = try(var.instance.ad_admin.principal_name, try(
-  var.instance.ad_admin.principal_type, null) == "User" ? data.azuread_user.current["id"].display_name : data.azuread_service_principal.current["id"].display_name)
+  object_id           = try(each.value.object_id, data.azurerm_client_config.current.object_id)
+  principal_type      = try(each.value.principal_type, "ServicePrincipal")
+  principal_name = try(each.value.principal_name, try(
+  each.value.principal_type, null) == "User" ? data.azuread_user.current["id"].display_name : data.azuread_service_principal.current["id"].display_name)
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {

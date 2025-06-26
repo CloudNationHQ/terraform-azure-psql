@@ -93,7 +93,7 @@ module "kv_backup" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
