@@ -1,13 +1,13 @@
 data "azurerm_client_config" "current" {}
 
 data "azuread_service_principal" "current" {
-  for_each = try(var.instance.ad_admin.principal_type, null) == null && try(var.instance.ad_admin, null) != null || try(var.instance.ad_admin.principal_type, null) == "ServicePrincipal" ? { "id" = {} } : {}
+  for_each = length([for admin_key, admin in var.instance.ad_admins : admin_key if admin.principal_type == "ServicePrincipal" && admin.object_id == null]) > 0 ? { "default" = {} } : {}
 
-  object_id = try(var.instance.ad_admin.principal_type, null) == null ? data.azurerm_client_config.current.object_id : try(var.instance.ad_admin.object_id, null)
+  object_id = data.azurerm_client_config.current.object_id
 }
 
 data "azuread_user" "current" {
-  for_each = try(var.instance.ad_admin.principal_type, null) == "User" ? { "id" = {} } : {}
+  for_each = length([for admin_key, admin in var.instance.ad_admins : admin_key if admin.principal_type == "User" && admin.object_id == null]) > 0 ? { "default" = {} } : {}
 
   object_id = data.azurerm_client_config.current.object_id
 }
@@ -150,7 +150,12 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   tenant_id           = data.azurerm_client_config.current.tenant_id
   object_id           = coalesce(each.value.object_id, data.azurerm_client_config.current.object_id)
   principal_type      = each.value.principal_type
-  principal_name      = each.value.principal_name
+  principal_name = coalesce(
+    each.value.principal_name,
+    each.value.principal_type == "User" && each.value.object_id == null && length(data.azuread_user.current) > 0 ? data.azuread_user.current["default"].display_name : null,
+    each.value.principal_type == "ServicePrincipal" && each.value.object_id == null && length(data.azuread_service_principal.current) > 0 ? data.azuread_service_principal.current["default"].display_name : null,
+    "Unknown"
+  )
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {
