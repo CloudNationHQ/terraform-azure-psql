@@ -60,19 +60,15 @@ module "postgresql" {
     ad_admins = {
       user-dba = {
         # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
-        # Set principal_type = "User" when running Terraform using a personal account.
         principal_type = "User"
 
-        # Optional: Specify another AD admin (user or service principal).
         object_id      = "6cecf2ab-c0ef-4047-9221-479c074d6a45"
         principal_name = "john.doe@sometenant.onmicrosoft.com"
       }
       group-infra = {
         # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
-        # Set principal_type = "User" when running Terraform using a personal account.
         principal_type = "Group"
 
-        # Optional: Specify another AD admin (user or service principal).
         object_id      = "6199e4e7-306f-4609-a62f-5d77905eaa50"
         principal_name = "infra-admin"
       }

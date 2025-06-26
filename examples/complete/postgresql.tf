@@ -50,14 +50,14 @@ locals {
       password_auth_enabled         = true
     }
 
-    ad_admin = {
-      # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
-      # Set principal_type = "User" when running Terraform using a personal account.
-      principal_type = "User"
+    ad_admins = {
+      user-dba = {
+        # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
+        principal_type = "User"
 
-      # Optional: Specify another AD admin (user or service principal).
-      # object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
-      # principal_name = "john.doe@sometenant.onmicrosoft.com"
+        object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
+        principal_name = "john.doe@sometenant.onmicrosoft.com"
+      }
     }
 
     network = {
