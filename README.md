@@ -36,54 +36,172 @@ End-to-end testing is not conducted on these modules, as they are individual com
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13 |
-| <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) | ~> 2.41 |
-| <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) | ~> 4.0 |
-| <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6 |
+The following requirements are needed by this module:
+
+- <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) (>= 0.13)
+
+- <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (~> 3.0)
+
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
+
+- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
 
 ## Providers
 
-| Name | Version |
-|------|---------|
-| <a name="provider_azuread"></a> [azuread](#provider\_azuread) | ~> 2.41 |
-| <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | ~> 4.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | ~> 3.6 |
+The following providers are used by this module:
+
+- <a name="provider_azuread"></a> [azuread](#provider\_azuread) (~> 3.0)
+
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0)
+
+- <a name="provider_random"></a> [random](#provider\_random) (~> 3.6)
 
 ## Resources
 
-| Name | Type |
-|------|------|
-| [azurerm_postgresql_flexible_server.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) | resource |
-| [azurerm_postgresql_flexible_server_active_directory_administrator.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) | resource |
-| [azurerm_postgresql_flexible_server_configuration.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) | resource |
-| [azurerm_postgresql_flexible_server_database.database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) | resource |
-| [azurerm_postgresql_flexible_server_firewall_rule.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) | resource |
-| [azurerm_role_assignment.identity_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) | resource |
-| [azurerm_user_assigned_identity.identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) | resource |
-| [random_password.psql_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
-| [azuread_service_principal.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) | data source |
-| [azuread_user.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) | data source |
-| [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) | data source |
+The following resources are used by this module:
 
-## Inputs
+- [azurerm_postgresql_flexible_server.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) (resource)
+- [azurerm_postgresql_flexible_server_active_directory_administrator.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
+- [azurerm_postgresql_flexible_server_configuration.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) (resource)
+- [azurerm_postgresql_flexible_server_database.database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) (resource)
+- [azurerm_postgresql_flexible_server_firewall_rule.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) (resource)
+- [azurerm_role_assignment.identity_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azurerm_user_assigned_identity.identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
+- [random_password.psql_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) (resource)
+- [azuread_service_principal.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
+- [azuread_user.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) (data source)
+- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_instance"></a> [instance](#input\_instance) | describes psql server related configuration | `any` | n/a | yes |
-| <a name="input_location"></a> [location](#input\_location) | default azure region and can be used if location is not specified inside the object. | `string` | `null` | no |
-| <a name="input_naming"></a> [naming](#input\_naming) | contains naming convention | `map(string)` | `{}` | no |
-| <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group) | default resource group and can be used if resourcegroup is not specified inside the object. | `string` | `null` | no |
+## Required Inputs
+
+The following input variables are required:
+
+### <a name="input_instance"></a> [instance](#input\_instance)
+
+Description: describes psql server related configuration
+
+Type:
+
+```hcl
+object({
+    name                              = string
+    resource_group                    = optional(string, null)
+    location                          = optional(string, null)
+    version                           = optional(number, 16)
+    sku_name                          = optional(string, "B_Standard_B1ms")
+    storage_mb                        = optional(number, 32768)
+    backup_retention_days             = optional(number, null)
+    geo_redundant_backup_enabled      = optional(bool, false)
+    zone                              = optional(string, null)
+    create_mode                       = optional(string, "Default")
+    administrator_login               = optional(string, null)
+    administrator_password            = optional(string, null)
+    delegated_subnet_id               = optional(string, null)
+    private_dns_zone_id               = optional(string, null)
+    public_network_access_enabled     = optional(bool, true)
+    source_server_id                  = optional(string, null)
+    point_in_time_restore_time_in_utc = optional(string, null)
+    replication_role                  = optional(string, null)
+
+    customer_managed_key = optional(object({
+      primary = optional(object({
+        key_vault_id     = string
+        key_vault_key_id = string
+      }), null)
+      backup = optional(object({
+        key_vault_id     = string
+        key_vault_key_id = string
+      }), null)
+    }), null) # Keep as null since it's truly optional and complex to handle
+
+    authentication = optional(object({
+      active_directory_auth_enabled = optional(bool, false)
+      password_auth_enabled         = optional(bool, true)
+    }), {}) # Changed from null to {} - enables removing try() functions
+
+    high_availability = optional(object({
+      mode                      = optional(string, "SameZone")
+      standby_availability_zone = optional(string, null)
+    }), {}) # Changed from null to {} - enables removing try() functions
+
+    maintenance_window = optional(object({
+      day_of_week  = optional(number, null)
+      start_hour   = optional(number, null)
+      start_minute = optional(number, null)
+    }), {}) # Changed from null to {} - enables removing try() functions
+
+    databases = optional(map(object({
+      name      = optional(string)
+      charset   = optional(string, null)
+      collation = optional(string, null)
+    })), {})
+
+    fw_rules = optional(map(object({
+      start_ip_address = string
+      end_ip_address   = string
+    })), {})
+
+    ad_admins = optional(map(object({
+      object_id      = optional(string, null)
+      principal_type = optional(string, "ServicePrincipal")
+      principal_name = optional(string, null)
+    })), {})
+
+    configurations = optional(map(object({
+      name  = string
+      value = string
+    })), {})
+  })
+```
+
+## Optional Inputs
+
+The following input variables are optional (have default values):
+
+### <a name="input_location"></a> [location](#input\_location)
+
+Description: default azure region and can be used if location is not specified inside the object.
+
+Type: `string`
+
+Default: `null`
+
+### <a name="input_naming"></a> [naming](#input\_naming)
+
+Description: contains naming convention
+
+Type: `map(string)`
+
+Default: `{}`
+
+### <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group)
+
+Description: default resource group and can be used if resourcegroup is not specified inside the object.
+
+Type: `string`
+
+Default: `null`
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_configurations"></a> [configurations](#output\_configurations) | contains all psql flexible server configurations |
-| <a name="output_databases"></a> [databases](#output\_databases) | contains all databases |
-| <a name="output_server"></a> [server](#output\_server) | contains all psql flexible server attributes |
+The following outputs are exported:
+
+### <a name="output_configurations"></a> [configurations](#output\_configurations)
+
+Description: contains all psql flexible server configurations
+
+### <a name="output_databases"></a> [databases](#output\_databases)
+
+Description: contains all databases
+
+### <a name="output_server"></a> [server](#output\_server)
+
+Description: contains all psql flexible server attributes
 <!-- END_TF_DOCS -->
+
+## Goals
+
+For more information, please see our [goals and non-goals](./GOALS.md).
 
 ## Testing
 
@@ -97,21 +215,21 @@ Full examples detailing all usages, along with integrations with dependency modu
 
 To update the module's documentation run `make doc`
 
-## Authors
-
-Module is maintained by [these awesome contributors](https://github.com/cloudnationhq/terraform-azure-psql/graphs/contributors).
-
-## Contributing
+## Contributors
 
 We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
 
-For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md). <br><br>
+
+<a href="https://github.com/cloudnationhq/terraform-azure-psql/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-psql" />
+</a>
 
 ## License
 
 MIT Licensed. See [LICENSE](./LICENSE) for full details.
 
-## Reference
+## References
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/)
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/postgresql/)

@@ -81,7 +81,7 @@ module "private_dns" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   naming   = local.naming
   instance = local.postgresql_server
@@ -92,7 +92,7 @@ module "postgresql" {
 
 module "postgresql_replicas" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
