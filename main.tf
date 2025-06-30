@@ -25,7 +25,7 @@ resource "random_password" "psql_admin_password" {
 # postgresql server
 resource "azurerm_postgresql_flexible_server" "postgresql" {
   name                              = var.instance.name
-  resource_group_name               = coalesce(var.instance.resource_group, var.resource_group)
+  resource_group_name               = coalesce(var.instance.resource_group_name, var.resource_group_name)
   location                          = coalesce(var.instance.location, var.location)
   version                           = var.instance.version
   sku_name                          = var.instance.sku_name
@@ -110,7 +110,7 @@ resource "azurerm_user_assigned_identity" "identity" {
   for_each = { for uai in local.user_assigned_identities : uai.key => uai }
 
   name                = "uai-${var.instance.name}${each.value.naming_suffix}"
-  resource_group_name = coalesce(var.instance.resource_group, var.resource_group)
+  resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
   location            = coalesce(var.instance.location, var.location)
 }
 
@@ -146,7 +146,7 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   for_each = var.instance.authentication.active_directory_auth_enabled == true ? var.instance.ad_admins : {}
 
   server_name         = azurerm_postgresql_flexible_server.postgresql.name
-  resource_group_name = coalesce(var.instance.resource_group, var.resource_group)
+  resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
   tenant_id           = data.azurerm_client_config.current.tenant_id
   object_id           = coalesce(each.value.object_id, data.azurerm_client_config.current.object_id)
   principal_type      = each.value.principal_type
