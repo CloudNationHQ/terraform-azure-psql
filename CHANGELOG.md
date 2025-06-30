@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.2.0...v4.0.0) (2025-06-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename resource_group to resource_group_name ([#59](https://github.com/CloudNationHQ/terraform-azure-psql/issues/59))
+* enhance AD admin configuration, allow multiple admins ([#57](https://github.com/CloudNationHQ/terraform-azure-psql/issues/57))
+
+### Features
+
+* enhance AD admin configuration, allow multiple admins ([#57](https://github.com/CloudNationHQ/terraform-azure-psql/issues/57)) ([0f68555](https://github.com/CloudNationHQ/terraform-azure-psql/commit/0f68555c25029c343a7653a1287bcd25957b1ea2))
+* rename resource_group to resource_group_name ([#59](https://github.com/CloudNationHQ/terraform-azure-psql/issues/59)) ([e0cd401](https://github.com/CloudNationHQ/terraform-azure-psql/commit/e0cd4018b747ea800d73919c65e1212983c65f2f))
+
 ## [3.2.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.1.0...v3.2.0) (2025-01-20)
 
 
