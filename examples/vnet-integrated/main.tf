@@ -76,7 +76,7 @@ module "postgresql" {
   instance = {
     name                          = module.naming.postgresql_server.name_unique
     location                      = module.rg.groups.demo.location
-    resource_group                = module.rg.groups.demo.name
+    resource_group_name           = module.rg.groups.demo.name
     public_network_access_enabled = false
 
     delegated_subnet_id = module.network.subnets.postgresql.id

@@ -46,9 +46,9 @@ module "postgresql" {
   version = "~> 4.0"
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.postgresql_server.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
     administrator_password = module.kv.secrets.psql-admin-password.value
 
