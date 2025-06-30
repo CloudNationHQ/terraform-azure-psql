@@ -2,7 +2,7 @@ variable "instance" {
   description = "describes psql server related configuration"
   type = object({
     name                              = string
-    resource_group                    = optional(string, null)
+    resource_group_name               = optional(string, null)
     location                          = optional(string, null)
     version                           = optional(number, 16)
     sku_name                          = optional(string, "B_Standard_B1ms")
@@ -29,23 +29,23 @@ variable "instance" {
         key_vault_id     = string
         key_vault_key_id = string
       }), null)
-    }), null) # Keep as null since it's truly optional and complex to handle
+    }), null)
 
     authentication = optional(object({
       active_directory_auth_enabled = optional(bool, false)
       password_auth_enabled         = optional(bool, true)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     high_availability = optional(object({
-      mode                      = optional(string, "SameZone")
+      mode                      = optional(string, null)
       standby_availability_zone = optional(string, null)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     maintenance_window = optional(object({
       day_of_week  = optional(number, null)
       start_hour   = optional(number, null)
       start_minute = optional(number, null)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     databases = optional(map(object({
       name      = optional(string)
@@ -71,7 +71,7 @@ variable "instance" {
   })
 
   validation {
-    condition     = var.instance.resource_group != null || var.resource_group != null
+    condition     = var.instance.resource_group_name != null || var.resource_group_name != null
     error_message = "resource_group must be provided either in the instance object or as a separate variable."
   }
 
@@ -108,7 +108,7 @@ variable "location" {
   default     = null
 }
 
-variable "resource_group" {
+variable "resource_group_name" {
   description = "default resource group and can be used if resourcegroup is not specified inside the object."
   type        = string
   default     = null
