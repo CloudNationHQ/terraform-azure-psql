@@ -68,6 +68,7 @@ The following resources are used by this module:
 - [azurerm_role_assignment.identity_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
 - [azurerm_user_assigned_identity.identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 - [random_password.psql_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) (resource)
+- [azuread_group.group](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/group) (data source)
 - [azuread_service_principal.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
 - [azuread_user.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) (data source)
 - [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
@@ -85,7 +86,7 @@ Type:
 ```hcl
 object({
     name                              = string
-    resource_group                    = optional(string, null)
+    resource_group_name               = optional(string, null)
     location                          = optional(string, null)
     version                           = optional(number, 16)
     sku_name                          = optional(string, "B_Standard_B1ms")
@@ -112,23 +113,23 @@ object({
         key_vault_id     = string
         key_vault_key_id = string
       }), null)
-    }), null) # Keep as null since it's truly optional and complex to handle
+    }), null)
 
     authentication = optional(object({
       active_directory_auth_enabled = optional(bool, false)
       password_auth_enabled         = optional(bool, true)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     high_availability = optional(object({
-      mode                      = optional(string, "SameZone")
+      mode                      = optional(string, null)
       standby_availability_zone = optional(string, null)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     maintenance_window = optional(object({
       day_of_week  = optional(number, null)
       start_hour   = optional(number, null)
       start_minute = optional(number, null)
-    }), {}) # Changed from null to {} - enables removing try() functions
+    }), {})
 
     databases = optional(map(object({
       name      = optional(string)
@@ -174,7 +175,7 @@ Type: `map(string)`
 
 Default: `{}`
 
-### <a name="input_resource_group"></a> [resource\_group](#input\_resource\_group)
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
 Description: default resource group and can be used if resourcegroup is not specified inside the object.
 
