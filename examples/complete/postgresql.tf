@@ -1,6 +1,6 @@
 locals {
   postgresql_server = {
-    name                = module.naming.postgresql_server.name
+    name                = module.naming.postgresql_server.name_unique
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
 
@@ -80,7 +80,7 @@ locals {
   }
   postgresql_replicas = {
     replica = {
-      name                          = "${module.naming.postgresql_server.name}-replica"
+      name                          = "${module.naming.postgresql_server.name_unique}-replica"
       location                      = module.rg.groups.demo.location
       resource_group_name           = module.rg.groups.demo.name
       version                       = 15
@@ -99,10 +99,6 @@ locals {
         primary = {
           key_vault_id     = module.kv.main.vault.id
           key_vault_key_id = module.kv.main.keys.psql.id
-        }
-        backup = {
-          key_vault_id     = module.kv.backup.vault.id
-          key_vault_key_id = module.kv.backup.keys.psql.id
         }
       }
 
@@ -123,7 +119,7 @@ locals {
       }
     }
     restore = {
-      name                = "${module.naming.postgresql_server.name}-restore"
+      name                = "${module.naming.postgresql_server.name_unique}-restore"
       location            = module.rg.groups.demo.location
       resource_group_name = module.rg.groups.demo.name
 

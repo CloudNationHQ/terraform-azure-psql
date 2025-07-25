@@ -1,5 +1,11 @@
 data "azurerm_client_config" "current" {}
 
+data "azuread_group" "group" {
+  for_each = { for admin_key, admin in var.instance.ad_admins : admin_key => admin if admin.principal_type == "Group" && admin.object_id == null }
+
+  display_name = each.value.principal_name
+}
+
 data "azuread_service_principal" "current" {
   for_each = length([for admin_key, admin in var.instance.ad_admins : admin_key if admin.principal_type == "ServicePrincipal" && admin.object_id == null]) > 0 ? { "default" = {} } : {}
 
@@ -148,8 +154,11 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   server_name         = azurerm_postgresql_flexible_server.postgresql.name
   resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  object_id           = coalesce(each.value.object_id, data.azurerm_client_config.current.object_id)
-  principal_type      = each.value.principal_type
+  object_id = coalesce(
+    each.value.object_id,
+    each.value.principal_type == "Group" ? data.azuread_group.group[each.key].object_id : data.azurerm_client_config.current.object_id
+  )
+  principal_type = each.value.principal_type
   principal_name = coalesce(
     each.value.principal_name,
     each.value.principal_type == "User" && each.value.object_id == null && length(data.azuread_user.current) > 0 ? data.azuread_user.current["default"].display_name : null,
