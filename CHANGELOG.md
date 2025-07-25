@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.0.0...v4.0.1) (2025-07-25)
+
+
+### Bug Fixes
+
+* made key 'backup' optional under 'customer_managed_key' object ([#61](https://github.com/CloudNationHQ/terraform-azure-psql/issues/61)) ([a85cf61](https://github.com/CloudNationHQ/terraform-azure-psql/commit/a85cf61741a211b20710d20a7bed05311865fc52))
+
 ## [4.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v3.2.0...v4.0.0) (2025-06-30)
 
 
