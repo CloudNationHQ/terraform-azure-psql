@@ -154,10 +154,6 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
   server_name         = azurerm_postgresql_flexible_server.postgresql.name
   resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
   tenant_id           = data.azurerm_client_config.current.tenant_id
-  # object_id = coalesce(
-  #   each.value.object_id,
-  #   each.value.principal_type == "Group" ? data.azuread_group.group[each.key].object_id : data.azurerm_client_config.current.object_id
-  # )
 
   object_id = each.value.object_id != null ? each.value.object_id : (
     each.value.principal_type == "Group" ? data.azuread_group.group[each.key].object_id : data.azurerm_client_config.current.object_id
