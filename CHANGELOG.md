@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.2](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.0.1...v4.0.2) (2025-10-02)
+
+
+### Bug Fixes
+
+* prevent data source lookup when object_id is provided ([#66](https://github.com/CloudNationHQ/terraform-azure-psql/issues/66)) ([d84b8d2](https://github.com/CloudNationHQ/terraform-azure-psql/commit/d84b8d274bb7eff1d59c2b78ae5a263c0ab50e82))
+
 ## [4.0.1](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.0.0...v4.0.1) (2025-07-25)
 
 
