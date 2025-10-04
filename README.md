@@ -233,4 +233,5 @@ MIT Licensed. See [LICENSE](./LICENSE) for full details.
 ## References
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/)
+
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/postgresql/)
