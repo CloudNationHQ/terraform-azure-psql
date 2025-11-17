@@ -79,6 +79,14 @@ module "private_dns" {
   depends_on = [module.network]
 }
 
+module "identity" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 1.0"
+
+  for_each = local.identities
+  config = each.value
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
   version = "~> 4.0"

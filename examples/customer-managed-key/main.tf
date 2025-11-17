@@ -91,6 +91,14 @@ module "kv_backup" {
   }
 }
 
+module "identity" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 1.0"
+
+  for_each = local.identities
+  config = each.value
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
   version = "~> 4.0"
@@ -105,14 +113,10 @@ module "postgresql" {
     geo_redundant_backup_enabled = true
 
     customer_managed_key = {
-      primary = {
-        key_vault_id     = module.kv.vault.id
-        key_vault_key_id = module.kv.keys.psql.id
-      }
-      backup = {
-        key_vault_id     = module.kv_backup.vault.id
-        key_vault_key_id = module.kv_backup.keys.psql.id
-      }
+      key_vault_key_id     = module.kv.keys.psql.id
+      primary_user_assigned_identity_id = module.identity.primary.config.id
+      geo_backup_key_vault_key_id = module.kv_backup.keys.psql.id
+      geo_backup_user_assigned_identity_id = module.identity.backup.config.id
     }
   }
 }

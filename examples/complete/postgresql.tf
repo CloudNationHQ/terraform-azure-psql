@@ -7,6 +7,7 @@ locals {
     version                       = 15
     sku_name                      = "GP_Standard_D2s_v3"
     storage_mb                    = 65536
+    auto_grow_enabled             = true
     backup_retention_days         = 35
     geo_redundant_backup_enabled  = true
     zone                          = 1
@@ -16,14 +17,10 @@ locals {
     administrator_password = module.kv.main.secrets.psql-admin-password.value
 
     customer_managed_key = {
-      primary = {
-        key_vault_id     = module.kv.main.vault.id
-        key_vault_key_id = module.kv.main.keys.psql.id
-      }
-      backup = {
-        key_vault_id     = module.kv.backup.vault.id
-        key_vault_key_id = module.kv.backup.keys.psql.id
-      }
+      key_vault_key_id     = module.kv.main.keys.psql.id
+      primary_user_assigned_identity_id = module.identity.primary.config.id
+      geo_backup_key_vault_key_id = module.kv.backup.keys.psql.id
+      geo_backup_user_assigned_identity_id = module.identity.backup.config.id
     }
 
     databases = {
@@ -96,10 +93,8 @@ locals {
       administrator_password = module.kv.main.secrets.psql-admin-password.value
 
       customer_managed_key = {
-        primary = {
-          key_vault_id     = module.kv.main.vault.id
-          key_vault_key_id = module.kv.main.keys.psql.id
-        }
+        key_vault_key_id     = module.kv.main.keys.psql.id
+        primary_user_assigned_identity_id = module.identity.primary.config.id
       }
 
       firewall_rules = {
