@@ -19,14 +19,14 @@ module "rg" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.postgresql_server.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
     fw_rules = {
       sales = {

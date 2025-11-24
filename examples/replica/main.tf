@@ -19,25 +19,25 @@ module "rg" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   instance = {
-    name           = module.naming.postgresql_server.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    sku_name       = "GP_Standard_D2s_v3"
+    name                = module.naming.postgresql_server.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    sku_name            = "GP_Standard_D2s_v3"
   }
 }
 
 module "postgresql_repl" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   instance = {
-    name           = join("-", [module.naming.postgresql_server.name, "repl"])
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    sku_name       = "GP_Standard_D2s_v3"
+    name                = join("-", [module.naming.postgresql_server.name_unique, "repl"])
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    sku_name            = "GP_Standard_D2s_v3"
 
     create_mode      = "Replica"
     source_server_id = module.postgresql.server.id

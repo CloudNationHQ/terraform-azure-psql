@@ -19,7 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 7.0"
+  version = "~> 9.0"
 
   naming = {
     subnet                 = module.naming.subnet.name
@@ -28,14 +28,14 @@ module "network" {
   }
 
   vnet = {
-    name           = module.naming.virtual_network.name
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
-    cidr           = ["10.18.0.0/16"]
+    name                = module.naming.virtual_network.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+    address_space       = ["10.18.0.0/16"]
 
     subnets = {
       postgresql = {
-        cidr = ["10.18.0.0/24"]
+        address_prefixes = ["10.18.0.0/24"]
         delegations = {
           psql = {
             name    = "Microsoft.DBforPostgreSQL/flexibleServers"
@@ -71,12 +71,12 @@ module "private_dns" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   instance = {
     name                          = module.naming.postgresql_server.name_unique
     location                      = module.rg.groups.demo.location
-    resource_group                = module.rg.groups.demo.name
+    resource_group_name           = module.rg.groups.demo.name
     public_network_access_enabled = false
 
     delegated_subnet_id = module.network.subnets.postgresql.id

@@ -19,14 +19,14 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 2.0"
+  version = "~> 4.0"
 
   naming = local.naming
 
   vault = {
-    name           = module.naming.key_vault.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.key_vault.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
     secrets = {
       random_string = {
@@ -43,12 +43,12 @@ module "kv" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 3.0"
+  version = "~> 4.0"
 
   instance = {
-    name           = module.naming.postgresql_server.name_unique
-    location       = module.rg.groups.demo.location
-    resource_group = module.rg.groups.demo.name
+    name                = module.naming.postgresql_server.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
 
     administrator_password = module.kv.secrets.psql-admin-password.value
 
@@ -57,14 +57,20 @@ module "postgresql" {
       password_auth_enabled         = true
     }
 
-    ad_admin = {
-      # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
-      # Set principal_type = "User" when running Terraform using a personal account.
-      principal_type = "User"
+    ad_admins = {
+      user-dba = {
+        # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
+        # Set principal_type = "User" when running Terraform using a personal account.
+        principal_type = "User"
 
-      # Optional: Specify another AD admin (user or service principal).
-      # object_id      = "7e81d148-0000-0000-0000-4ae000b6406e"
-      # principal_name = "john.doe@sometenant.onmicrosoft.com"
+        # Optional: Specify another AD admin (user or service principal).
+        # object_id      = "6cecf2ab-c0ef-4047-9221-479c074d6a45"
+        # principal_name = "john.doe@sometenant.onmicrosoft.com"
+      }
+      group-infra = {
+        principal_type = "Group"
+        principal_name = "infra-admin"
+      }
     }
   }
 }
