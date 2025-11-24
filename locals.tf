@@ -9,14 +9,3 @@ locals {
     } if uai != null
   ])
 }
-
-locals {
-  databases = flatten([
-    for db_key, db in var.instance.databases : {
-      db_key    = db_key
-      name      = coalesce(db.name, join("-", [var.naming.postgresql_database, db_key]))
-      charset   = db.charset
-      collation = db.collation
-    }
-  ])
-}

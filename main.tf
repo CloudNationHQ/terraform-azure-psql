@@ -36,18 +36,26 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   version                           = var.instance.version
   sku_name                          = var.instance.sku_name
   storage_mb                        = var.instance.storage_mb
+  storage_tier                      = var.instance.storage_tier
+  auto_grow_enabled                 = var.instance.auto_grow_enabled
   backup_retention_days             = var.instance.backup_retention_days
   geo_redundant_backup_enabled      = var.instance.geo_redundant_backup_enabled
   zone                              = var.instance.zone
   create_mode                       = var.instance.create_mode
   administrator_login               = var.instance.create_mode == "Default" && var.instance.authentication.password_auth_enabled == true ? coalesce(var.instance.administrator_login, "${replace(var.instance.name, "-", "_")}_admin") : null
   administrator_password            = var.instance.create_mode == "Default" && var.instance.authentication.password_auth_enabled == true ? coalesce(var.instance.administrator_password, random_password.psql_admin_password["pw"].result) : null
+  administrator_password_wo         = var.instance.administrator_password_wo
+  administrator_password_wo_version = var.instance.administrator_password_wo_version
   delegated_subnet_id               = var.instance.delegated_subnet_id
   private_dns_zone_id               = var.instance.private_dns_zone_id
   public_network_access_enabled     = var.instance.public_network_access_enabled
   source_server_id                  = var.instance.create_mode == "PointInTimeRestore" || var.instance.create_mode == "Replica" ? var.instance.source_server_id : null
   point_in_time_restore_time_in_utc = var.instance.create_mode == "PointInTimeRestore" ? var.instance.point_in_time_restore_time_in_utc : null
   replication_role                  = var.instance.replication_role
+
+  tags = coalesce(
+    var.instance.tags, var.tags
+  )
 
   dynamic "identity" {
     for_each = var.instance.customer_managed_key != null ? (
@@ -130,9 +138,12 @@ resource "azurerm_role_assignment" "identity_role_assignment" {
 
 # databases
 resource "azurerm_postgresql_flexible_server_database" "database" {
-  for_each = { for database in local.databases : database.db_key => database }
+  for_each = lookup(var.instance, "databases", null) != null ? var.instance.databases : {}
 
-  name      = each.value.name
+  name = coalesce(
+    each.value.name, try("${var.naming.postgresql_database}-${each.key}", each.key)
+  )
+
   server_id = azurerm_postgresql_flexible_server.postgresql.id
   charset   = each.value.charset
   collation = each.value.collation

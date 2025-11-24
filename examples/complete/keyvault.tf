@@ -31,7 +31,7 @@ locals {
 
       secrets = {
         random_string = {
-          psql-admin-password = {
+          psql_admin_password = {
             length      = 16
             special     = false
             min_special = 0
