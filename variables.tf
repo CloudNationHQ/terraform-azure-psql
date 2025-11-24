@@ -2,34 +2,39 @@ variable "instance" {
   description = "describes psql server related configuration"
   type = object({
     name                              = string
-    resource_group_name               = optional(string, null)
-    location                          = optional(string, null)
+    resource_group_name               = optional(string)
+    location                          = optional(string)
     version                           = optional(number, 16)
     sku_name                          = optional(string, "B_Standard_B1ms")
     storage_mb                        = optional(number, 32768)
-    backup_retention_days             = optional(number, null)
+    storage_tier                      = optional(string)
+    auto_grow_enabled                 = optional(bool, false)
+    backup_retention_days             = optional(number)
     geo_redundant_backup_enabled      = optional(bool, false)
-    zone                              = optional(string, null)
+    zone                              = optional(string)
     create_mode                       = optional(string, "Default")
-    administrator_login               = optional(string, null)
-    administrator_password            = optional(string, null)
-    delegated_subnet_id               = optional(string, null)
-    private_dns_zone_id               = optional(string, null)
+    administrator_login               = optional(string)
+    administrator_password            = optional(string)
+    administrator_password_wo         = optional(string)
+    administrator_password_wo_version = optional(number)
+    delegated_subnet_id               = optional(string)
+    private_dns_zone_id               = optional(string)
     public_network_access_enabled     = optional(bool, true)
-    source_server_id                  = optional(string, null)
-    point_in_time_restore_time_in_utc = optional(string, null)
-    replication_role                  = optional(string, null)
+    source_server_id                  = optional(string)
+    point_in_time_restore_time_in_utc = optional(string)
+    replication_role                  = optional(string)
+    tags                              = optional(map(string))
 
     customer_managed_key = optional(object({
       primary = optional(object({
         key_vault_id     = string
         key_vault_key_id = string
-      }), null)
+      }))
       backup = optional(object({
         key_vault_id     = string
         key_vault_key_id = string
-      }), null)
-    }), null)
+      }))
+    }))
 
     authentication = optional(object({
       active_directory_auth_enabled = optional(bool, false)
@@ -37,20 +42,20 @@ variable "instance" {
     }), {})
 
     high_availability = optional(object({
-      mode                      = optional(string, null)
-      standby_availability_zone = optional(string, null)
+      mode                      = optional(string)
+      standby_availability_zone = optional(string)
     }), {})
 
     maintenance_window = optional(object({
-      day_of_week  = optional(number, null)
-      start_hour   = optional(number, null)
-      start_minute = optional(number, null)
+      day_of_week  = optional(number)
+      start_hour   = optional(number)
+      start_minute = optional(number)
     }), {})
 
     databases = optional(map(object({
       name      = optional(string)
-      charset   = optional(string, null)
-      collation = optional(string, null)
+      charset   = optional(string)
+      collation = optional(string)
     })), {})
 
     fw_rules = optional(map(object({
@@ -59,9 +64,9 @@ variable "instance" {
     })), {})
 
     ad_admins = optional(map(object({
-      object_id      = optional(string, null)
+      object_id      = optional(string)
       principal_type = optional(string, "ServicePrincipal")
-      principal_name = optional(string, null)
+      principal_name = optional(string)
     })), {})
 
     configurations = optional(map(object({
@@ -112,4 +117,10 @@ variable "resource_group_name" {
   description = "default resource group and can be used if resourcegroup is not specified inside the object."
   type        = string
   default     = null
+}
+
+variable "tags" {
+  description = "tags to be added to the resources"
+  type        = map(string)
+  default     = {}
 }

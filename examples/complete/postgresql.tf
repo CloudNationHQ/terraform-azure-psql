@@ -7,13 +7,15 @@ locals {
     version                       = 15
     sku_name                      = "GP_Standard_D2s_v3"
     storage_mb                    = 65536
+    storage_tier                  = "P20"
+    auto_grow_enabled             = true
     backup_retention_days         = 35
     geo_redundant_backup_enabled  = true
     zone                          = 1
     create_mode                   = "Default"
     public_network_access_enabled = false
 
-    administrator_password = module.kv.main.secrets.psql-admin-password.value
+    administrator_password = module.kv.main.secrets.psql_admin_password.value
 
     customer_managed_key = {
       primary = {
@@ -28,6 +30,7 @@ locals {
 
     databases = {
       postgresdb1 = {
+        name    = "postgresdb1-name"
         charset = "UTF8"
       }
       postgresdb2 = {
@@ -77,6 +80,11 @@ locals {
       mode                      = "ZoneRedundant"
       standby_availability_zone = 2
     }
+
+    tags = {
+      Environment = "Demo"
+      Project     = "Terraform Azure PostgreSQL Flexible Server"
+    }
   }
   postgresql_replicas = {
     replica = {
@@ -93,7 +101,7 @@ locals {
       create_mode      = "Replica"
       source_server_id = module.postgresql.server.id
 
-      administrator_password = module.kv.main.secrets.psql-admin-password.value
+      administrator_password = module.kv.main.secrets.psql_admin_password.value
 
       customer_managed_key = {
         primary = {
