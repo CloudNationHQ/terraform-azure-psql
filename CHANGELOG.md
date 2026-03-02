@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.1.0...v4.2.0) (2026-03-02)
+
+
+### Features
+
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#75](https://github.com/CloudNationHQ/terraform-azure-psql/issues/75)) ([12038f1](https://github.com/CloudNationHQ/terraform-azure-psql/commit/12038f141245ee12a14000ac2f30c313818a40b2))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#77](https://github.com/CloudNationHQ/terraform-azure-psql/issues/77)) ([5b8980e](https://github.com/CloudNationHQ/terraform-azure-psql/commit/5b8980e9b65590236117803bbd9f947bc8f66bc8))
+
 ## [4.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.0.2...v4.1.0) (2025-11-24)
 
 
