@@ -65,8 +65,8 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
     content {
       type = "UserAssigned"
       identity_ids = compact([
-        var.instance.customer_managed_key.primary != null ? azurerm_user_assigned_identity.identity["primary"].id : "",
-        var.instance.customer_managed_key.backup != null ? azurerm_user_assigned_identity.identity["backup"].id : ""
+        var.instance.customer_managed_key.primary != null ? var.instance.customer_managed_key.primary.user_assigned_identity_id : "",
+        var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.user_assigned_identity_id : ""
       ])
     }
   }
@@ -76,10 +76,10 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
 
     content {
       key_vault_key_id                  = var.instance.customer_managed_key.primary.key_vault_key_id
-      primary_user_assigned_identity_id = azurerm_user_assigned_identity.identity["primary"].id
+      primary_user_assigned_identity_id = var.instance.customer_managed_key.primary.user_assigned_identity_id
 
       geo_backup_key_vault_key_id          = var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.key_vault_key_id : null
-      geo_backup_user_assigned_identity_id = var.instance.customer_managed_key.backup != null ? azurerm_user_assigned_identity.identity["backup"].id : null
+      geo_backup_user_assigned_identity_id = var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.user_assigned_identity_id : null
     }
   }
 
@@ -119,21 +119,12 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   depends_on = [azurerm_role_assignment.identity_role_assignment]
 }
 
-# user assigned identities
-resource "azurerm_user_assigned_identity" "identity" {
-  for_each = { for uai in local.user_assigned_identities : uai.key => uai }
-
-  name                = "uai-${var.instance.name}${each.value.naming_suffix}"
-  resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
-  location            = coalesce(var.instance.location, var.location)
-}
-
 resource "azurerm_role_assignment" "identity_role_assignment" {
   for_each = { for uai in local.user_assigned_identities : uai.key => uai }
 
   scope                = each.value.key_vault_id
   role_definition_name = "Key Vault Crypto Officer"
-  principal_id         = azurerm_user_assigned_identity.identity[each.key].principal_id
+  principal_id         = each.value.user_assigned_identity_principal
 }
 
 # databases

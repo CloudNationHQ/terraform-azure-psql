@@ -19,12 +19,16 @@ locals {
 
     customer_managed_key = {
       primary = {
-        key_vault_id     = module.kv.main.vault.id
-        key_vault_key_id = module.kv.main.keys.psql.id
+        key_vault_id              = module.kv.main.vault.id
+        key_vault_key_id          = module.kv.main.keys.psql.id
+        principal_id              = module.identity_primary.config.principal_id
+        user_assigned_identity_id = module.identity_primary.config.id
       }
       backup = {
-        key_vault_id     = module.kv.backup.vault.id
-        key_vault_key_id = module.kv.backup.keys.psql.id
+        key_vault_id              = module.kv.backup.vault.id
+        key_vault_key_id          = module.kv.backup.keys.psql.id
+        principal_id              = module.identity_backup.config.principal_id
+        user_assigned_identity_id = module.identity_backup.config.id
       }
     }
 
@@ -105,8 +109,10 @@ locals {
 
       customer_managed_key = {
         primary = {
-          key_vault_id     = module.kv.main.vault.id
-          key_vault_key_id = module.kv.main.keys.psql.id
+          key_vault_id              = module.kv.main.vault.id
+          key_vault_key_id          = module.kv.main.keys.psql.id
+          principal_id              = module.identity_replica.config.principal_id
+          user_assigned_identity_id = module.identity_replica.config.id
         }
       }
 

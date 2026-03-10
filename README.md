@@ -27,7 +27,7 @@ End-to-end testing is not conducted on these modules, as they are individual com
 ## Features
 
 - enables azure ad and local administrator authentication, individually or in combination.
-- provides support for customer managed keys using a user-assigned identity.
+- provides support for customer managed keys using an existing user-assigned identity.
 - facilitates vnet integration through subnet delegation and private DNS zones.
 - offers maintenance, high availability, options for robust management.
 - allows creation of empty databases.
@@ -66,7 +66,6 @@ The following resources are used by this module:
 - [azurerm_postgresql_flexible_server_database.database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) (resource)
 - [azurerm_postgresql_flexible_server_firewall_rule.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) (resource)
 - [azurerm_role_assignment.identity_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [azurerm_user_assigned_identity.identity](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/user_assigned_identity) (resource)
 - [random_password.psql_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) (resource)
 - [azuread_group.group](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/group) (data source)
 - [azuread_service_principal.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
@@ -111,12 +110,16 @@ object({
 
     customer_managed_key = optional(object({
       primary = optional(object({
-        key_vault_id     = string
-        key_vault_key_id = string
+        key_vault_id              = string
+        key_vault_key_id          = string
+        principal_id              = string
+        user_assigned_identity_id = string
       }))
       backup = optional(object({
-        key_vault_id     = string
-        key_vault_key_id = string
+        key_vault_id              = string
+        key_vault_key_id          = string
+        principal_id              = string
+        user_assigned_identity_id = string
       }))
     }))
 
