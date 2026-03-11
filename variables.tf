@@ -27,12 +27,16 @@ variable "instance" {
 
     customer_managed_key = optional(object({
       primary = optional(object({
-        key_vault_id     = string
-        key_vault_key_id = string
+        key_vault_id              = string
+        key_vault_key_id          = string
+        principal_id              = string
+        user_assigned_identity_id = string
       }))
       backup = optional(object({
-        key_vault_id     = string
-        key_vault_key_id = string
+        key_vault_id              = string
+        key_vault_key_id          = string
+        principal_id              = string
+        user_assigned_identity_id = string
       }))
     }))
 
@@ -98,6 +102,11 @@ variable "instance" {
   validation {
     condition     = (var.instance.create_mode != "PointInTimeRestore" && var.instance.create_mode != "Replica") || var.instance.source_server_id != null
     error_message = "source_server_id is required when create_mode is PointInTimeRestore or Replica."
+  }
+
+  validation {
+    condition     = var.instance.customer_managed_key == null || var.instance.customer_managed_key.primary != null
+    error_message = "customer_managed_key.primary is required when customer_managed_key is provided."
   }
 }
 

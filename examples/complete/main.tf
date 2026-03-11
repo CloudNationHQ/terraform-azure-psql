@@ -1,6 +1,6 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.1"
+  version = "~> 0.26"
 
   suffix = ["demo", "dev"]
 }
@@ -79,9 +79,42 @@ module "private_dns" {
   depends_on = [module.network]
 }
 
+module "identity_primary" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 2.0"
+
+  config = {
+    name                = module.naming.user_assigned_identity.name
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+  }
+}
+
+module "identity_backup" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 2.0"
+
+  config = {
+    name                = "${module.naming.user_assigned_identity.name}-backup"
+    location            = "westeurope"
+    resource_group_name = module.rg.groups.demo.name
+  }
+}
+
+module "identity_replica" {
+  source  = "cloudnationhq/uai/azure"
+  version = "~> 2.0"
+
+  config = {
+    name                = "${module.naming.user_assigned_identity.name}-replica"
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+  }
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   naming   = local.naming
   instance = local.postgresql_server
@@ -92,7 +125,7 @@ module "postgresql" {
 
 module "postgresql_replicas" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 4.0"
+  version = "~> 5.0"
 
   naming = local.naming
 
