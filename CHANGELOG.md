@@ -1,5 +1,20 @@
 # Changelog
 
+## [5.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.1.0...v5.0.0) (2026-03-11)
+
+
+### ⚠ BREAKING CHANGES
+
+* accept existing user-assigned identities for CMK ([#79](https://github.com/CloudNationHQ/terraform-azure-psql/issues/79))
+
+### Features
+
+* accept existing user-assigned identities for CMK ([#79](https://github.com/CloudNationHQ/terraform-azure-psql/issues/79)) ([d3b3c9d](https://github.com/CloudNationHQ/terraform-azure-psql/commit/d3b3c9d6c6b42ca944cc41898922a6cc95c710d5))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#75](https://github.com/CloudNationHQ/terraform-azure-psql/issues/75)) ([12038f1](https://github.com/CloudNationHQ/terraform-azure-psql/commit/12038f141245ee12a14000ac2f30c313818a40b2))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#77](https://github.com/CloudNationHQ/terraform-azure-psql/issues/77)) ([5b8980e](https://github.com/CloudNationHQ/terraform-azure-psql/commit/5b8980e9b65590236117803bbd9f947bc8f66bc8))
+* **deps:** bump github.com/ulikunitz/xz from 0.5.10 to 0.5.14 in /tests ([#74](https://github.com/CloudNationHQ/terraform-azure-psql/issues/74)) ([e372955](https://github.com/CloudNationHQ/terraform-azure-psql/commit/e37295511b98f6528a4422605e17ee49d52258df))
+* **deps:** bump golang.org/x/crypto from 0.36.0 to 0.45.0 in /tests ([#73](https://github.com/CloudNationHQ/terraform-azure-psql/issues/73)) ([fde72dd](https://github.com/CloudNationHQ/terraform-azure-psql/commit/fde72ddd046fce2027bc3abbb7b0d29f2d328e60))
+
 ## [4.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.0.2...v4.1.0) (2025-11-24)
 
 
