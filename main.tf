@@ -112,6 +112,15 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
     }
   }
 
+  dynamic "cluster" {
+    for_each = var.instance.cluster != null ? [1] : []
+
+    content {
+      size                  = var.instance.cluster.size
+      default_database_name = var.instance.cluster.default_database_name
+    }
+  }
+
   lifecycle {
     ignore_changes = [zone, high_availability[0].standby_availability_zone]
   }

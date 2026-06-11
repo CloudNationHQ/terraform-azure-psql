@@ -139,6 +139,11 @@ object({
       start_minute = optional(number)
     }), {})
 
+    cluster = optional(object({
+      size                  = number
+      default_database_name = optional(string)
+    }))
+
     databases = optional(map(object({
       name      = optional(string)
       charset   = optional(string)
