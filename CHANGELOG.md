@@ -1,5 +1,14 @@
 # Changelog
 
+## [5.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v5.0.0...v5.1.0) (2026-06-11)
+
+
+### Features
+
+* add optional cluster block to postgresql flexible server ([#83](https://github.com/CloudNationHQ/terraform-azure-psql/issues/83)) ([4069fcf](https://github.com/CloudNationHQ/terraform-azure-psql/commit/4069fcfb56a1f203907247b0fed9cf9e9be0c518))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#80](https://github.com/CloudNationHQ/terraform-azure-psql/issues/80)) ([9929fa6](https://github.com/CloudNationHQ/terraform-azure-psql/commit/9929fa601b76b07ea6653cb9882359597e338e91))
+* **deps:** bump github.com/cloudnationhq/az-cn-go-validor in /tests ([#82](https://github.com/CloudNationHQ/terraform-azure-psql/issues/82)) ([a18b7e4](https://github.com/CloudNationHQ/terraform-azure-psql/commit/a18b7e461273adcf74272f13b0088e4885d3c223))
+
 ## [5.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v4.1.0...v5.0.0) (2026-03-11)
 
 
