@@ -74,3 +74,8 @@ module "postgresql" {
     }
   }
 }
+
+# Note: when active_directory_auth_enabled = true the module automatically:
+#   - assigns a SystemAssigned managed identity to the server
+#   - grants that identity the Directory Readers role in Entra ID
+# This is required so the server can resolve Entra user identities at login time.
