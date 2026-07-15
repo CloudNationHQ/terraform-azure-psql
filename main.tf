@@ -58,16 +58,14 @@ resource "azurerm_postgresql_flexible_server" "postgresql" {
   )
 
   dynamic "identity" {
-    for_each = var.instance.customer_managed_key != null ? (
-      (var.instance.customer_managed_key.primary != null || var.instance.customer_managed_key.backup != null) ? [1] : []
-    ) : []
+    for_each = local.identity_type != null ? [1] : []
 
     content {
-      type = "UserAssigned"
-      identity_ids = compact([
+      type = local.identity_type
+      identity_ids = local.has_cmk ? compact([
         var.instance.customer_managed_key.primary != null ? var.instance.customer_managed_key.primary.user_assigned_identity_id : "",
         var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.user_assigned_identity_id : ""
-      ])
+      ]) : []
     }
   }
 
@@ -177,6 +175,27 @@ resource "azurerm_postgresql_flexible_server_active_directory_administrator" "po
     each.value.principal_type == "ServicePrincipal" && each.value.object_id == null && length(data.azuread_service_principal.current) > 0 ? data.azuread_service_principal.current["default"].display_name : null,
     "Unknown"
   )
+
+  depends_on = [time_sleep.wait_after_directory_role_assignment]
+}
+
+## In order to set an Active Directory Admin, you need to assign the Directory Readers role to the system assigned managed identity of the PostgreSQL Flexible Server.
+resource "azuread_directory_role" "reader" {
+  for_each     = local.ad_auth_enabled ? { "default" = {} } : {}
+  display_name = "Directory Readers"
+}
+
+resource "azuread_directory_role_assignment" "role" {
+  for_each            = local.ad_auth_enabled ? { "default" = {} } : {}
+  role_id             = azuread_directory_role.reader["default"].template_id
+  principal_object_id = azurerm_postgresql_flexible_server.postgresql.identity[0].principal_id
+}
+
+resource "time_sleep" "wait_after_directory_role_assignment" {
+  for_each = local.ad_auth_enabled ? { "default" = {} } : {}
+
+  depends_on      = [azuread_directory_role_assignment.role]
+  create_duration = "10s"
 }
 
 resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {

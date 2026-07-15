@@ -1,1 +1,0 @@
-This deploys an Azure PostgreSQL Flexible Server with both Active Directory (AD) and Password authentication enabled.

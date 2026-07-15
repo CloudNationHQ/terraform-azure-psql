@@ -25,5 +25,22 @@ module "postgresql" {
     name                = module.naming.postgresql_server.name
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
+
+    authentication = {
+      active_directory_auth_enabled = true
+      password_auth_enabled         = true
+    }
+
+    ad_admins = {
+      user-dba = {
+        # Defaults to the identity running Terraform. Set principal_type = "User"
+        # when authenticating with a personal account instead of a service principal.
+        principal_type = "ServicePrincipal"
+      }
+      group-infra = {
+        principal_type = "Group"
+        principal_name = "infra-admin"
+      }
+    }
   }
 }
