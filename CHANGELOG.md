@@ -1,5 +1,17 @@
 # Changelog
 
+## [6.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v5.1.0...v6.0.0) (2026-09-18)
+
+
+### ⚠ BREAKING CHANGES
+
+* this change causes recreates
+
+### Features
+
+* azurerm provider 5 upgrade ([#89](https://github.com/CloudNationHQ/terraform-azure-psql/issues/89)) ([ac53f1d](https://github.com/CloudNationHQ/terraform-azure-psql/commit/ac53f1d3aa01377116713f7b8da3a2b06106b045))
+* **deps:** bump golang.org/x/crypto from 0.45.0 to 0.52.0 in /tests ([#86](https://github.com/CloudNationHQ/terraform-azure-psql/issues/86)) ([0c1911c](https://github.com/CloudNationHQ/terraform-azure-psql/commit/0c1911c31e1d3cabba1420f9a89e1efbeb71b952))
+
 ## [5.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v5.0.0...v5.1.0) (2026-06-11)
 
 
