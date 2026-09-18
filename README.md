@@ -2,28 +2,6 @@
 
 This Terraform module streamlines the creation and management of postgresql flexible servers on Azure, offering a flexible solution for deploying optimized instances.
 
-**Note**: This module will deploy the flexible server and not the single server which is on a deprecation [path](https://azure.microsoft.com/en-us/updates/azure-database-for-postgresql-single-server-will-be-retired-migrate-to-flexible-server-by-28-march-2025/).
-
-## Goals
-
-The main objective is to create a more logic data structure, achieved by combining and grouping related resources together in a complex object.
-
-The structure of the module promotes reusability. It's intended to be a repeatable component, simplifying the process of building diverse workloads and platform accelerators consistently.
-
-A primary goal is to utilize keys and values in the object that correspond to the REST API's structure. This enables us to carry out iterations, increasing its practical value as time goes on.
-
-A last key goal is to separate logic from configuration in the module, thereby enhancing its scalability, ease of customization, and manageability.
-
-## Non-Goals
-
-These modules are not intended to be complete, ready-to-use solutions; they are designed as components for creating your own patterns.
-
-They are not tailored for a single use case but are meant to be versatile and applicable to a range of scenarios.
-
-Security standardization is applied at the pattern level, while the modules include default values based on best practices but do not enforce specific security standards.
-
-End-to-end testing is not conducted on these modules, as they are individual components and do not undergo the extensive testing reserved for complete patterns or solutions.
-
 ## Features
 
 - enables azure ad and local administrator authentication, individually or in combination.
@@ -42,9 +20,7 @@ The following requirements are needed by this module:
 
 - <a name="requirement_azuread"></a> [azuread](#requirement\_azuread) (~> 3.0)
 
-- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 4.0)
-
-- <a name="requirement_random"></a> [random](#requirement\_random) (~> 3.6)
+- <a name="requirement_azurerm"></a> [azurerm](#requirement\_azurerm) (~> 5.0)
 
 ## Providers
 
@@ -52,31 +28,28 @@ The following providers are used by this module:
 
 - <a name="provider_azuread"></a> [azuread](#provider\_azuread) (~> 3.0)
 
-- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 4.0)
-
-- <a name="provider_random"></a> [random](#provider\_random) (~> 3.6)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) (~> 5.0)
 
 ## Resources
 
 The following resources are used by this module:
 
-- [azurerm_postgresql_flexible_server.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) (resource)
-- [azurerm_postgresql_flexible_server_active_directory_administrator.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
-- [azurerm_postgresql_flexible_server_configuration.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) (resource)
-- [azurerm_postgresql_flexible_server_database.database](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) (resource)
-- [azurerm_postgresql_flexible_server_firewall_rule.postgresql](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) (resource)
-- [azurerm_role_assignment.identity_role_assignment](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
-- [random_password.psql_admin_password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) (resource)
-- [azuread_group.group](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/group) (data source)
-- [azuread_service_principal.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
-- [azuread_user.current](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) (data source)
-- [azurerm_client_config.current](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
+- [azurerm_postgresql_flexible_server.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server) (resource)
+- [azurerm_postgresql_flexible_server_active_directory_administrator.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_active_directory_administrator) (resource)
+- [azurerm_postgresql_flexible_server_configuration.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_configuration) (resource)
+- [azurerm_postgresql_flexible_server_database.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_database) (resource)
+- [azurerm_postgresql_flexible_server_firewall_rule.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/postgresql_flexible_server_firewall_rule) (resource)
+- [azurerm_role_assignment.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/role_assignment) (resource)
+- [azuread_group.this](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/group) (data source)
+- [azuread_service_principal.this](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/service_principal) (data source)
+- [azuread_user.this](https://registry.terraform.io/providers/hashicorp/azuread/latest/docs/data-sources/user) (data source)
+- [azurerm_client_config.this](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/data-sources/client_config) (data source)
 
 ## Required Inputs
 
 The following input variables are required:
 
-### <a name="input_instance"></a> [instance](#input\_instance)
+### <a name="input_postgresql"></a> [postgresql](#input\_postgresql)
 
 Description: describes psql server related configuration
 
@@ -89,11 +62,14 @@ object({
     location                          = optional(string)
     version                           = optional(number, 16)
     sku_name                          = optional(string, "B_Standard_B1ms")
-    storage_mb                        = optional(number, 32768)
+    storage_mb                        = optional(number)
     storage_tier                      = optional(string)
-    auto_grow_enabled                 = optional(bool, false)
+    storage_type                      = optional(string)
+    storage_iops                      = optional(number)
+    storage_throughput                = optional(number)
+    auto_grow_enabled                 = optional(bool)
     backup_retention_days             = optional(number)
-    geo_redundant_backup_enabled      = optional(bool, false)
+    geo_redundant_backup_enabled      = optional(bool)
     zone                              = optional(string)
     create_mode                       = optional(string, "Default")
     administrator_login               = optional(string)
@@ -102,68 +78,78 @@ object({
     administrator_password_wo_version = optional(number)
     delegated_subnet_id               = optional(string)
     private_dns_zone_id               = optional(string)
-    public_network_access_enabled     = optional(bool, true)
+    public_network_access_enabled     = optional(bool)
     source_server_id                  = optional(string)
     point_in_time_restore_time_in_utc = optional(string)
     replication_role                  = optional(string)
     tags                              = optional(map(string))
-
-    customer_managed_key = optional(object({
-      primary = optional(object({
-        key_vault_id              = string
-        key_vault_key_id          = string
-        principal_id              = string
-        user_assigned_identity_id = string
-      }))
-      backup = optional(object({
-        key_vault_id              = string
-        key_vault_key_id          = string
-        principal_id              = string
-        user_assigned_identity_id = string
-      }))
+    identity = optional(object({
+      type         = string
+      identity_ids = optional(list(string))
     }))
-
+    customer_managed_key = optional(object({
+      key_vault_key_id                     = optional(string)
+      geo_backup_key_vault_key_id          = optional(string)
+      primary_user_assigned_identity_id    = optional(string)
+      geo_backup_user_assigned_identity_id = optional(string)
+    }))
     authentication = optional(object({
       active_directory_auth_enabled = optional(bool, false)
       password_auth_enabled         = optional(bool, true)
     }), {})
-
     high_availability = optional(object({
       mode                      = optional(string)
       standby_availability_zone = optional(string)
-    }), {})
-
+    }))
     maintenance_window = optional(object({
       day_of_week  = optional(number)
       start_hour   = optional(number)
       start_minute = optional(number)
-    }), {})
-
+    }))
     cluster = optional(object({
       size                  = number
       default_database_name = optional(string)
     }))
-
     databases = optional(map(object({
       name      = optional(string)
       charset   = optional(string)
       collation = optional(string)
     })), {})
-
     fw_rules = optional(map(object({
+      name             = optional(string)
       start_ip_address = string
       end_ip_address   = string
     })), {})
-
     ad_admins = optional(map(object({
-      object_id      = optional(string)
-      principal_type = optional(string, "ServicePrincipal")
-      principal_name = optional(string)
+      principal_type             = optional(string, "ServicePrincipal")
+      principal_name             = optional(string)
+      object_id                  = optional(string)
+      display_name               = optional(string)
+      client_id                  = optional(string)
+      user_principal_name        = optional(string)
+      mail                       = optional(string)
+      mail_nickname              = optional(string)
+      employee_id                = optional(string)
+      mail_enabled               = optional(bool)
+      security_enabled           = optional(bool)
+      include_transitive_members = optional(bool)
     })), {})
-
     configurations = optional(map(object({
-      name  = string
+      name  = optional(string)
       value = string
+    })), {})
+    role_assignments = optional(map(object({
+      scope                                  = string
+      principal_id                           = string
+      name                                   = optional(string)
+      role_definition_name                   = optional(string)
+      role_definition_id                     = optional(string)
+      description                            = optional(string)
+      principal_type                         = optional(string)
+      condition                              = optional(string)
+      condition_version                      = optional(string)
+      delegated_managed_identity_resource_id = optional(string)
+      skip_service_principal_aad_check       = optional(bool)
     })), {})
   })
 ```
@@ -179,14 +165,6 @@ Description: default azure region and can be used if location is not specified i
 Type: `string`
 
 Default: `null`
-
-### <a name="input_naming"></a> [naming](#input\_naming)
-
-Description: contains naming convention
-
-Type: `map(string)`
-
-Default: `{}`
 
 ### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
 
@@ -241,11 +219,7 @@ To update the module's documentation run `make doc`
 
 We welcome contributions from the community! Whether it's reporting a bug, suggesting a new feature, or submitting a pull request, your input is highly valued.
 
-For more information, please see our contribution [guidelines](./CONTRIBUTING.md). <br><br>
-
-<a href="https://github.com/cloudnationhq/terraform-azure-psql/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=cloudnationhq/terraform-azure-psql" />
-</a>
+For more information, please see our contribution [guidelines](./CONTRIBUTING.md).
 
 ## License
 
@@ -254,5 +228,4 @@ MIT Licensed. See [LICENSE](./LICENSE) for full details.
 ## References
 
 - [Documentation](https://learn.microsoft.com/en-us/azure/postgresql/flexible-server/)
-
 - [Rest Api](https://learn.microsoft.com/en-us/rest/api/postgresql/)

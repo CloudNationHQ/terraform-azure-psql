@@ -1,4 +1,4 @@
-variable "instance" {
+variable "postgresql" {
   description = "describes psql server related configuration"
   type = object({
     name                              = string
@@ -6,11 +6,14 @@ variable "instance" {
     location                          = optional(string)
     version                           = optional(number, 16)
     sku_name                          = optional(string, "B_Standard_B1ms")
-    storage_mb                        = optional(number, 32768)
+    storage_mb                        = optional(number)
     storage_tier                      = optional(string)
-    auto_grow_enabled                 = optional(bool, false)
+    storage_type                      = optional(string)
+    storage_iops                      = optional(number)
+    storage_throughput                = optional(number)
+    auto_grow_enabled                 = optional(bool)
     backup_retention_days             = optional(number)
-    geo_redundant_backup_enabled      = optional(bool, false)
+    geo_redundant_backup_enabled      = optional(bool)
     zone                              = optional(string)
     create_mode                       = optional(string, "Default")
     administrator_login               = optional(string)
@@ -19,106 +22,90 @@ variable "instance" {
     administrator_password_wo_version = optional(number)
     delegated_subnet_id               = optional(string)
     private_dns_zone_id               = optional(string)
-    public_network_access_enabled     = optional(bool, true)
+    public_network_access_enabled     = optional(bool)
     source_server_id                  = optional(string)
     point_in_time_restore_time_in_utc = optional(string)
     replication_role                  = optional(string)
     tags                              = optional(map(string))
-
-    customer_managed_key = optional(object({
-      primary = optional(object({
-        key_vault_id              = string
-        key_vault_key_id          = string
-        principal_id              = string
-        user_assigned_identity_id = string
-      }))
-      backup = optional(object({
-        key_vault_id              = string
-        key_vault_key_id          = string
-        principal_id              = string
-        user_assigned_identity_id = string
-      }))
+    identity = optional(object({
+      type         = string
+      identity_ids = optional(list(string))
     }))
-
+    customer_managed_key = optional(object({
+      key_vault_key_id                     = optional(string)
+      geo_backup_key_vault_key_id          = optional(string)
+      primary_user_assigned_identity_id    = optional(string)
+      geo_backup_user_assigned_identity_id = optional(string)
+    }))
     authentication = optional(object({
       active_directory_auth_enabled = optional(bool, false)
       password_auth_enabled         = optional(bool, true)
     }), {})
-
     high_availability = optional(object({
       mode                      = optional(string)
       standby_availability_zone = optional(string)
-    }), {})
-
+    }))
     maintenance_window = optional(object({
       day_of_week  = optional(number)
       start_hour   = optional(number)
       start_minute = optional(number)
-    }), {})
-
+    }))
     cluster = optional(object({
       size                  = number
       default_database_name = optional(string)
     }))
-
     databases = optional(map(object({
       name      = optional(string)
       charset   = optional(string)
       collation = optional(string)
     })), {})
-
     fw_rules = optional(map(object({
+      name             = optional(string)
       start_ip_address = string
       end_ip_address   = string
     })), {})
-
     ad_admins = optional(map(object({
-      object_id      = optional(string)
-      principal_type = optional(string, "ServicePrincipal")
-      principal_name = optional(string)
+      principal_type             = optional(string, "ServicePrincipal")
+      principal_name             = optional(string)
+      object_id                  = optional(string)
+      display_name               = optional(string)
+      client_id                  = optional(string)
+      user_principal_name        = optional(string)
+      mail                       = optional(string)
+      mail_nickname              = optional(string)
+      employee_id                = optional(string)
+      mail_enabled               = optional(bool)
+      security_enabled           = optional(bool)
+      include_transitive_members = optional(bool)
     })), {})
-
     configurations = optional(map(object({
-      name  = string
+      name  = optional(string)
       value = string
+    })), {})
+    role_assignments = optional(map(object({
+      scope                                  = string
+      principal_id                           = string
+      name                                   = optional(string)
+      role_definition_name                   = optional(string)
+      role_definition_id                     = optional(string)
+      description                            = optional(string)
+      principal_type                         = optional(string)
+      condition                              = optional(string)
+      condition_version                      = optional(string)
+      delegated_managed_identity_resource_id = optional(string)
+      skip_service_principal_aad_check       = optional(bool)
     })), {})
   })
 
   validation {
-    condition     = var.instance.resource_group_name != null || var.resource_group_name != null
-    error_message = "resource_group must be provided either in the instance object or as a separate variable."
+    condition     = var.postgresql.resource_group_name != null || var.resource_group_name != null
+    error_message = "resource_group must be provided either in the postgresql object or as a separate variable."
   }
 
   validation {
-    condition     = var.instance.location != null || var.location != null
-    error_message = "location must be provided either in the instance object or as a separate variable."
+    condition     = var.postgresql.location != null || var.location != null
+    error_message = "location must be provided either in the postgresql object or as a separate variable."
   }
-
-  validation {
-    condition     = var.instance.create_mode == null || contains(["Default", "PointInTimeRestore", "Replica"], var.instance.create_mode)
-    error_message = "create_mode must be one of: Default, PointInTimeRestore, Replica."
-  }
-
-  validation {
-    condition     = var.instance.create_mode != "PointInTimeRestore" || var.instance.point_in_time_restore_time_in_utc != null
-    error_message = "point_in_time_restore_time_in_utc is required when create_mode is PointInTimeRestore."
-  }
-
-  validation {
-    condition     = (var.instance.create_mode != "PointInTimeRestore" && var.instance.create_mode != "Replica") || var.instance.source_server_id != null
-    error_message = "source_server_id is required when create_mode is PointInTimeRestore or Replica."
-  }
-
-  validation {
-    condition     = var.instance.customer_managed_key == null || var.instance.customer_managed_key.primary != null
-    error_message = "customer_managed_key.primary is required when customer_managed_key is provided."
-  }
-}
-
-variable "naming" {
-  description = "contains naming convention"
-  type        = map(string)
-  default     = {}
 }
 
 variable "location" {

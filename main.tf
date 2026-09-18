@@ -1,188 +1,220 @@
-data "azurerm_client_config" "current" {}
+data "azurerm_client_config" "this" {}
 
-data "azuread_group" "group" {
-  for_each = { for admin_key, admin in var.instance.ad_admins : admin_key => admin if admin.principal_type == "Group" && admin.object_id == null }
+data "azuread_group" "this" {
+  for_each = {
+    for key, admin in var.postgresql.ad_admins :
+    key => admin if admin.principal_type == "Group"
+  }
 
-  display_name = each.value.principal_name
+  object_id                  = each.value.object_id
+  display_name               = each.value.display_name
+  mail_nickname              = each.value.mail_nickname
+  mail_enabled               = each.value.mail_enabled
+  security_enabled           = each.value.security_enabled
+  include_transitive_members = each.value.include_transitive_members
 }
 
-data "azuread_service_principal" "current" {
-  for_each = length([for admin_key, admin in var.instance.ad_admins : admin_key if admin.principal_type == "ServicePrincipal" && admin.object_id == null]) > 0 ? { "default" = {} } : {}
+data "azuread_service_principal" "this" {
+  for_each = {
+    for key, admin in var.postgresql.ad_admins :
+    key => admin if admin.principal_type == "ServicePrincipal"
+  }
 
-  object_id = data.azurerm_client_config.current.object_id
+  display_name = each.value.display_name
+  client_id    = each.value.client_id
+
+  object_id = length(compact([each.value.display_name, each.value.client_id])) == 0 ? coalesce(
+    each.value.object_id, data.azurerm_client_config.this.object_id
+  ) : each.value.object_id
 }
 
-data "azuread_user" "current" {
-  for_each = length([for admin_key, admin in var.instance.ad_admins : admin_key if admin.principal_type == "User" && admin.object_id == null]) > 0 ? { "default" = {} } : {}
+data "azuread_user" "this" {
+  for_each = {
+    for key, admin in var.postgresql.ad_admins :
+    key => admin if admin.principal_type == "User"
+  }
 
-  object_id = data.azurerm_client_config.current.object_id
-}
+  user_principal_name = each.value.user_principal_name
+  mail                = each.value.mail
+  mail_nickname       = each.value.mail_nickname
+  employee_id         = each.value.employee_id
 
-resource "random_password" "psql_admin_password" {
-  for_each = var.instance.authentication.password_auth_enabled == true ? { "pw" = {} } : {}
-
-  length           = 16
-  min_lower        = 1
-  min_upper        = 1
-  min_numeric      = 1
-  override_special = "!#$%&-_?"
+  object_id = length(compact([each.value.user_principal_name, each.value.mail, each.value.mail_nickname, each.value.employee_id])) == 0 ? coalesce(
+    each.value.object_id, data.azurerm_client_config.this.object_id
+  ) : each.value.object_id
 }
 
 # postgresql server
-resource "azurerm_postgresql_flexible_server" "postgresql" {
-  name                              = var.instance.name
-  resource_group_name               = coalesce(var.instance.resource_group_name, var.resource_group_name)
-  location                          = coalesce(var.instance.location, var.location)
-  version                           = var.instance.version
-  sku_name                          = var.instance.sku_name
-  storage_mb                        = var.instance.storage_mb
-  storage_tier                      = var.instance.storage_tier
-  auto_grow_enabled                 = var.instance.auto_grow_enabled
-  backup_retention_days             = var.instance.backup_retention_days
-  geo_redundant_backup_enabled      = var.instance.geo_redundant_backup_enabled
-  zone                              = var.instance.zone
-  create_mode                       = var.instance.create_mode
-  administrator_login               = var.instance.create_mode == "Default" && var.instance.authentication.password_auth_enabled == true ? coalesce(var.instance.administrator_login, "${replace(var.instance.name, "-", "_")}_admin") : null
-  administrator_password            = var.instance.create_mode == "Default" && var.instance.authentication.password_auth_enabled == true ? coalesce(var.instance.administrator_password, random_password.psql_admin_password["pw"].result) : null
-  administrator_password_wo         = var.instance.administrator_password_wo
-  administrator_password_wo_version = var.instance.administrator_password_wo_version
-  delegated_subnet_id               = var.instance.delegated_subnet_id
-  private_dns_zone_id               = var.instance.private_dns_zone_id
-  public_network_access_enabled     = var.instance.public_network_access_enabled
-  source_server_id                  = var.instance.create_mode == "PointInTimeRestore" || var.instance.create_mode == "Replica" ? var.instance.source_server_id : null
-  point_in_time_restore_time_in_utc = var.instance.create_mode == "PointInTimeRestore" ? var.instance.point_in_time_restore_time_in_utc : null
-  replication_role                  = var.instance.replication_role
+resource "azurerm_postgresql_flexible_server" "this" {
+  resource_group_name = coalesce(
+    var.postgresql.resource_group_name, var.resource_group_name
+  )
+
+  location = coalesce(
+    var.postgresql.location, var.location
+  )
+
+  name                              = var.postgresql.name
+  version                           = var.postgresql.version
+  sku_name                          = var.postgresql.sku_name
+  storage_mb                        = var.postgresql.storage_mb
+  storage_tier                      = var.postgresql.storage_tier
+  storage_type                      = var.postgresql.storage_type
+  storage_iops                      = var.postgresql.storage_iops
+  storage_throughput                = var.postgresql.storage_throughput
+  auto_grow_enabled                 = var.postgresql.auto_grow_enabled
+  backup_retention_days             = var.postgresql.backup_retention_days
+  geo_redundant_backup_enabled      = var.postgresql.geo_redundant_backup_enabled
+  zone                              = var.postgresql.zone
+  create_mode                       = var.postgresql.create_mode
+  administrator_login               = var.postgresql.administrator_login
+  administrator_password            = var.postgresql.administrator_password
+  administrator_password_wo         = var.postgresql.administrator_password_wo
+  administrator_password_wo_version = var.postgresql.administrator_password_wo_version
+  delegated_subnet_id               = var.postgresql.delegated_subnet_id
+  private_dns_zone_id               = var.postgresql.private_dns_zone_id
+  public_network_access_enabled     = var.postgresql.public_network_access_enabled
+  replication_role                  = var.postgresql.replication_role
+  source_server_id                  = var.postgresql.source_server_id
+  point_in_time_restore_time_in_utc = var.postgresql.point_in_time_restore_time_in_utc
 
   tags = coalesce(
-    var.instance.tags, var.tags
+    var.postgresql.tags, var.tags
   )
 
   dynamic "identity" {
-    for_each = var.instance.customer_managed_key != null ? (
-      (var.instance.customer_managed_key.primary != null || var.instance.customer_managed_key.backup != null) ? [1] : []
-    ) : []
+    for_each = var.postgresql.identity != null ? { "this" = var.postgresql.identity } : {}
 
     content {
-      type = "UserAssigned"
-      identity_ids = compact([
-        var.instance.customer_managed_key.primary != null ? var.instance.customer_managed_key.primary.user_assigned_identity_id : "",
-        var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.user_assigned_identity_id : ""
-      ])
+      type         = identity.value.type
+      identity_ids = identity.value.identity_ids
     }
   }
 
   dynamic "customer_managed_key" {
-    for_each = var.instance.customer_managed_key != null ? [1] : []
+    for_each = var.postgresql.customer_managed_key != null ? { "this" = var.postgresql.customer_managed_key } : {}
 
     content {
-      key_vault_key_id                  = var.instance.customer_managed_key.primary.key_vault_key_id
-      primary_user_assigned_identity_id = var.instance.customer_managed_key.primary.user_assigned_identity_id
-
-      geo_backup_key_vault_key_id          = var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.key_vault_key_id : null
-      geo_backup_user_assigned_identity_id = var.instance.customer_managed_key.backup != null ? var.instance.customer_managed_key.backup.user_assigned_identity_id : null
+      key_vault_key_id                     = customer_managed_key.value.key_vault_key_id
+      geo_backup_key_vault_key_id          = customer_managed_key.value.geo_backup_key_vault_key_id
+      primary_user_assigned_identity_id    = customer_managed_key.value.primary_user_assigned_identity_id
+      geo_backup_user_assigned_identity_id = customer_managed_key.value.geo_backup_user_assigned_identity_id
     }
   }
 
-  dynamic "authentication" {
-    for_each = [1] # Always create since we have default values
-
-    content {
-      active_directory_auth_enabled = var.instance.authentication.active_directory_auth_enabled
-      password_auth_enabled         = var.instance.authentication.password_auth_enabled
-      tenant_id                     = var.instance.authentication.active_directory_auth_enabled == true ? data.azurerm_client_config.current.tenant_id : null
-    }
+  authentication {
+    active_directory_auth_enabled = var.postgresql.authentication.active_directory_auth_enabled
+    password_auth_enabled         = var.postgresql.authentication.password_auth_enabled
+    tenant_id                     = var.postgresql.authentication.active_directory_auth_enabled ? data.azurerm_client_config.this.tenant_id : null
   }
 
   dynamic "high_availability" {
-    for_each = var.instance.high_availability.mode != null ? [1] : []
+    for_each = var.postgresql.high_availability != null ? { "this" = var.postgresql.high_availability } : {}
 
     content {
-      mode                      = var.instance.high_availability.mode
-      standby_availability_zone = var.instance.high_availability.standby_availability_zone
+      mode                      = high_availability.value.mode
+      standby_availability_zone = high_availability.value.standby_availability_zone
     }
   }
 
   dynamic "maintenance_window" {
-    for_each = (var.instance.maintenance_window.day_of_week != null || var.instance.maintenance_window.start_hour != null || var.instance.maintenance_window.start_minute != null) ? [1] : []
+    for_each = var.postgresql.maintenance_window != null ? { "this" = var.postgresql.maintenance_window } : {}
 
     content {
-      day_of_week  = var.instance.maintenance_window.day_of_week
-      start_hour   = var.instance.maintenance_window.start_hour
-      start_minute = var.instance.maintenance_window.start_minute
+      day_of_week  = maintenance_window.value.day_of_week
+      start_hour   = maintenance_window.value.start_hour
+      start_minute = maintenance_window.value.start_minute
     }
   }
 
   dynamic "cluster" {
-    for_each = var.instance.cluster != null ? [1] : []
+    for_each = var.postgresql.cluster != null ? { "this" = var.postgresql.cluster } : {}
 
     content {
-      size                  = var.instance.cluster.size
-      default_database_name = var.instance.cluster.default_database_name
+      size                  = cluster.value.size
+      default_database_name = cluster.value.default_database_name
     }
   }
 
   lifecycle {
     ignore_changes = [zone, high_availability[0].standby_availability_zone]
   }
-
-  depends_on = [azurerm_role_assignment.identity_role_assignment]
+  depends_on = [azurerm_role_assignment.this]
 }
 
-resource "azurerm_role_assignment" "identity_role_assignment" {
-  for_each = { for uai in local.user_assigned_identities : uai.key => uai }
+resource "azurerm_role_assignment" "this" {
+  for_each = var.postgresql.role_assignments
 
-  scope                = each.value.key_vault_id
-  role_definition_name = "Key Vault Crypto Officer"
-  principal_id         = each.value.user_assigned_identity_principal
+  name                                   = each.value.name
+  scope                                  = each.value.scope
+  principal_id                           = each.value.principal_id
+  role_definition_name                   = each.value.role_definition_name
+  role_definition_id                     = each.value.role_definition_id
+  description                            = each.value.description
+  principal_type                         = each.value.principal_type
+  condition                              = each.value.condition
+  condition_version                      = each.value.condition_version
+  delegated_managed_identity_resource_id = each.value.delegated_managed_identity_resource_id
+  skip_service_principal_aad_check       = each.value.skip_service_principal_aad_check
 }
 
 # databases
-resource "azurerm_postgresql_flexible_server_database" "database" {
-  for_each = lookup(var.instance, "databases", null) != null ? var.instance.databases : {}
+resource "azurerm_postgresql_flexible_server_database" "this" {
+  for_each = var.postgresql.databases
 
   name = coalesce(
-    each.value.name, try("${var.naming.postgresql_database}-${each.key}", each.key)
+    each.value.name, each.key
   )
 
-  server_id = azurerm_postgresql_flexible_server.postgresql.id
+  server_id = azurerm_postgresql_flexible_server.this.id
   charset   = each.value.charset
   collation = each.value.collation
 }
 
 # firewall rules
-resource "azurerm_postgresql_flexible_server_firewall_rule" "postgresql" {
-  for_each = var.instance.fw_rules
+resource "azurerm_postgresql_flexible_server_firewall_rule" "this" {
+  for_each = var.postgresql.fw_rules
 
-  name             = each.key
-  server_id        = azurerm_postgresql_flexible_server.postgresql.id
+  name = coalesce(
+    each.value.name, each.key
+  )
+
+  server_id        = azurerm_postgresql_flexible_server.this.id
   start_ip_address = each.value.start_ip_address
   end_ip_address   = each.value.end_ip_address
 }
 
-resource "azurerm_postgresql_flexible_server_active_directory_administrator" "postgresql" {
-  for_each = var.instance.authentication.active_directory_auth_enabled == true ? var.instance.ad_admins : {}
+resource "azurerm_postgresql_flexible_server_active_directory_administrator" "this" {
+  for_each = var.postgresql.ad_admins
 
-  server_name         = azurerm_postgresql_flexible_server.postgresql.name
-  resource_group_name = coalesce(var.instance.resource_group_name, var.resource_group_name)
-  tenant_id           = data.azurerm_client_config.current.tenant_id
-
-  object_id = each.value.object_id != null ? each.value.object_id : (
-    each.value.principal_type == "Group" ? data.azuread_group.group[each.key].object_id : data.azurerm_client_config.current.object_id
+  resource_group_name = coalesce(
+    var.postgresql.resource_group_name, var.resource_group_name
   )
 
+  server_name    = azurerm_postgresql_flexible_server.this.name
+  tenant_id      = data.azurerm_client_config.this.tenant_id
   principal_type = each.value.principal_type
+
+  object_id = try(
+    data.azuread_group.this[each.key].object_id,
+    data.azuread_user.this[each.key].object_id,
+    data.azuread_service_principal.this[each.key].object_id
+  )
+
   principal_name = coalesce(
     each.value.principal_name,
-    each.value.principal_type == "User" && each.value.object_id == null && length(data.azuread_user.current) > 0 ? data.azuread_user.current["default"].display_name : null,
-    each.value.principal_type == "ServicePrincipal" && each.value.object_id == null && length(data.azuread_service_principal.current) > 0 ? data.azuread_service_principal.current["default"].display_name : null,
-    "Unknown"
+    try(
+      data.azuread_group.this[each.key].display_name,
+      data.azuread_user.this[each.key].display_name,
+      data.azuread_service_principal.this[each.key].display_name
+    )
   )
 }
 
-resource "azurerm_postgresql_flexible_server_configuration" "postgresql" {
-  for_each = var.instance.configurations
+resource "azurerm_postgresql_flexible_server_configuration" "this" {
+  for_each = var.postgresql.configurations
 
-  name      = each.value.name
-  server_id = azurerm_postgresql_flexible_server.postgresql.id
+  name      = coalesce(each.value.name, each.key)
+  server_id = azurerm_postgresql_flexible_server.this.id
   value     = each.value.value
 }

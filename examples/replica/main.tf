@@ -1,13 +1,13 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  version = "~> 0.32"
 
   suffix = ["demo", "dev"]
 }
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -17,23 +17,48 @@ module "rg" {
   }
 }
 
+module "kv" {
+  source  = "cloudnationhq/kv/azure"
+  version = "~> 6.0"
+
+  vault = {
+    name                = module.naming.key_vault.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+
+    secrets = {
+      random_string = {
+        psql-admin-password = {
+          length      = 16
+          special     = false
+          min_special = 0
+          min_upper   = 2
+        }
+      }
+    }
+  }
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
-  instance = {
+  postgresql = {
     name                = module.naming.postgresql_server.name_unique
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
-    sku_name            = "GP_Standard_D2s_v3"
+
+    administrator_login    = "psqladmin"
+    administrator_password = module.kv.secrets.psql-admin-password.value
+    sku_name               = "GP_Standard_D2s_v3"
   }
 }
 
 module "postgresql_repl" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
-  instance = {
+  postgresql = {
     name                = join("-", [module.naming.postgresql_server.name_unique, "repl"])
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name

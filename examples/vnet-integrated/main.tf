@@ -1,13 +1,13 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  version = "~> 0.32"
 
   suffix = ["demo", "dev"]
 }
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,13 +19,7 @@ module "rg" {
 
 module "network" {
   source  = "cloudnationhq/vnet/azure"
-  version = "~> 9.0"
-
-  naming = {
-    subnet                 = module.naming.subnet.name
-    network_security_group = module.naming.network_security_group.name
-    route_table            = module.naming.route_table.name
-  }
+  version = "~> 10.0"
 
   vnet = {
     name                = module.naming.virtual_network.name
@@ -35,6 +29,7 @@ module "network" {
 
     subnets = {
       postgresql = {
+        name             = "${module.naming.subnet.name}-postgresql"
         address_prefixes = ["10.18.0.0/24"]
         delegations = {
           psql = {
@@ -49,13 +44,14 @@ module "network" {
 
 module "private_dns" {
   source  = "cloudnationhq/pdns/azure"
-  version = "~> 3.0"
+  version = "~> 5.0"
+
+  resource_group_name = module.rg.groups.demo.name
 
   zones = {
     private = {
       psql = {
-        name           = "privatelink.postgres.database.azure.com"
-        resource_group = module.rg.groups.demo.name
+        name = "privatelink.postgres.database.azure.com"
 
         virtual_network_links = {
           psql = {
@@ -69,14 +65,39 @@ module "private_dns" {
   depends_on = [module.network]
 }
 
+module "kv" {
+  source  = "cloudnationhq/kv/azure"
+  version = "~> 6.0"
+
+  vault = {
+    name                = module.naming.key_vault.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+
+    secrets = {
+      random_string = {
+        psql-admin-password = {
+          length      = 16
+          special     = false
+          min_special = 0
+          min_upper   = 2
+        }
+      }
+    }
+  }
+}
+
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
-  instance = {
-    name                          = module.naming.postgresql_server.name_unique
-    location                      = module.rg.groups.demo.location
-    resource_group_name           = module.rg.groups.demo.name
+  postgresql = {
+    name                = module.naming.postgresql_server.name_unique
+    location            = module.rg.groups.demo.location
+    resource_group_name = module.rg.groups.demo.name
+
+    administrator_login           = "psqladmin"
+    administrator_password        = module.kv.secrets.psql-admin-password.value
     public_network_access_enabled = false
 
     delegated_subnet_id = module.network.subnets.postgresql.id
