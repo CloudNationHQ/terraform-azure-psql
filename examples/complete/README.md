@@ -1,1 +1,0 @@
-This example illustrates the most complete postgresql flexible server setup.

@@ -1,13 +1,13 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  version = "~> 0.32"
 
   suffix = ["demo", "dev"]
 }
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,14 +19,14 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
+  version = "~> 6.0"
 
-  naming = local.naming
 
   vault = {
-    name                = module.naming.key_vault.name_unique
-    location            = module.rg.groups.demo.location
-    resource_group_name = module.rg.groups.demo.name
+    name                     = module.naming.key_vault.name_unique
+    location                 = module.rg.groups.demo.location
+    resource_group_name      = module.rg.groups.demo.name
+    purge_protection_enabled = true
 
     keys = {
       psql = {
@@ -39,15 +39,24 @@ module "kv" {
           "verify", "wrapKey"
         ]
 
-        policy = {
-          rotation = {
-            expire_after         = "P90D"
-            notify_before_expiry = "P30D"
-            automatic = {
-              time_after_creation = "P83D"
-              time_before_expiry  = "P30D"
-            }
+        rotation_policy = {
+          expire_after         = "P90D"
+          notify_before_expiry = "P30D"
+          automatic = {
+            time_after_creation = "P83D"
+            time_before_expiry  = "P30D"
           }
+        }
+      }
+    }
+
+    secrets = {
+      random_string = {
+        psql-admin-password = {
+          length      = 16
+          special     = false
+          min_special = 0
+          min_upper   = 2
         }
       }
     }
@@ -56,14 +65,13 @@ module "kv" {
 
 module "kv_backup" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
-
-  naming = local.naming
+  version = "~> 6.0"
 
   vault = {
-    name                = "${module.naming.key_vault.name_unique}-bck"
-    location            = "westeurope"
-    resource_group_name = module.rg.groups.demo.name
+    name                     = "${module.naming.key_vault.name_unique}-bck"
+    location                 = "westeurope"
+    resource_group_name      = module.rg.groups.demo.name
+    purge_protection_enabled = true
 
     keys = {
       psql = {
@@ -76,14 +84,12 @@ module "kv_backup" {
           "verify", "wrapKey"
         ]
 
-        policy = {
-          rotation = {
-            expire_after         = "P90D"
-            notify_before_expiry = "P30D"
-            automatic = {
-              time_after_creation = "P83D"
-              time_before_expiry  = "P30D"
-            }
+        rotation_policy = {
+          expire_after         = "P90D"
+          notify_before_expiry = "P30D"
+          automatic = {
+            time_after_creation = "P83D"
+            time_before_expiry  = "P30D"
           }
         }
       }
@@ -93,9 +99,9 @@ module "kv_backup" {
 
 module "identity_primary" {
   source  = "cloudnationhq/uai/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
-  config = {
+  identity = {
     name                = module.naming.user_assigned_identity.name
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
@@ -104,9 +110,9 @@ module "identity_primary" {
 
 module "identity_backup" {
   source  = "cloudnationhq/uai/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
-  config = {
+  identity = {
     name                = "${module.naming.user_assigned_identity.name}-bck"
     location            = "westeurope"
     resource_group_name = module.rg.groups.demo.name
@@ -115,29 +121,43 @@ module "identity_backup" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
-  naming = local.naming
-
-  instance = {
+  postgresql = {
     name                = module.naming.postgresql_server.name_unique
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
 
     geo_redundant_backup_enabled = true
 
+    administrator_login    = "psqladmin"
+    administrator_password = module.kv.secrets.psql-admin-password.value
+
+    identity = {
+      type = "UserAssigned"
+      identity_ids = [
+        module.identity_primary.identity.id,
+        module.identity_backup.identity.id
+      ]
+    }
+
     customer_managed_key = {
+      key_vault_key_id                     = module.kv.keys.psql.id
+      primary_user_assigned_identity_id    = module.identity_primary.identity.id
+      geo_backup_key_vault_key_id          = module.kv_backup.keys.psql.id
+      geo_backup_user_assigned_identity_id = module.identity_backup.identity.id
+    }
+
+    role_assignments = {
       primary = {
-        key_vault_id              = module.kv.vault.id
-        key_vault_key_id          = module.kv.keys.psql.id
-        principal_id              = module.identity_primary.config.principal_id
-        user_assigned_identity_id = module.identity_primary.config.id
+        scope                = module.kv.vault.id
+        role_definition_name = "Key Vault Crypto Officer"
+        principal_id         = module.identity_primary.identity.principal_id
       }
       backup = {
-        key_vault_id              = module.kv_backup.vault.id
-        key_vault_key_id          = module.kv_backup.keys.psql.id
-        principal_id              = module.identity_backup.config.principal_id
-        user_assigned_identity_id = module.identity_backup.config.id
+        scope                = module.kv_backup.vault.id
+        role_definition_name = "Key Vault Crypto Officer"
+        principal_id         = module.identity_backup.identity.principal_id
       }
     }
   }

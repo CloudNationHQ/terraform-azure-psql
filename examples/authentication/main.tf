@@ -1,13 +1,13 @@
 module "naming" {
   source  = "cloudnationhq/naming/azure"
-  version = "~> 0.26"
+  version = "~> 0.32"
 
   suffix = ["demo", "dev"]
 }
 
 module "rg" {
   source  = "cloudnationhq/rg/azure"
-  version = "~> 2.0"
+  version = "~> 3.0"
 
   groups = {
     demo = {
@@ -19,9 +19,8 @@ module "rg" {
 
 module "kv" {
   source  = "cloudnationhq/kv/azure"
-  version = "~> 4.0"
+  version = "~> 6.0"
 
-  naming = local.naming
 
   vault = {
     name                = module.naming.key_vault.name_unique
@@ -43,13 +42,14 @@ module "kv" {
 
 module "postgresql" {
   source  = "cloudnationhq/psql/azure"
-  version = "~> 5.0"
+  version = "~> 6.0"
 
-  instance = {
+  postgresql = {
     name                = module.naming.postgresql_server.name_unique
     location            = module.rg.groups.demo.location
     resource_group_name = module.rg.groups.demo.name
 
+    administrator_login    = "psqladmin"
     administrator_password = module.kv.secrets.psql-admin-password.value
 
     authentication = {
@@ -59,17 +59,11 @@ module "postgresql" {
 
     ad_admins = {
       user-dba = {
-        # Specifies the AD admin as a Service Principal or User, defaults to ServicePrincipal in the current Terraform run.
-        # Set principal_type = "User" when running Terraform using a personal account.
         principal_type = "User"
-
-        # Optional: Specify another AD admin (user or service principal).
-        # object_id      = "6cecf2ab-c0ef-4047-9221-479c074d6a45"
-        # principal_name = "john.doe@sometenant.onmicrosoft.com"
       }
       group-infra = {
         principal_type = "Group"
-        principal_name = "infra-admin"
+        display_name   = "infra-admin"
       }
     }
   }
