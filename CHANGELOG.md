@@ -1,5 +1,12 @@
 # Changelog
 
+## [6.1.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v6.0.0...v6.1.0) (2026-10-20)
+
+
+### Features
+
+* **deps:** bump github.com/klauspost/compress in /tests ([#90](https://github.com/CloudNationHQ/terraform-azure-psql/issues/90)) ([67f860f](https://github.com/CloudNationHQ/terraform-azure-psql/commit/67f860f31dad263e74c2f63f8512524741fe2746))
+
 ## [6.0.0](https://github.com/CloudNationHQ/terraform-azure-psql/compare/v5.1.0...v6.0.0) (2026-09-18)
 
 
